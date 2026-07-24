@@ -23,7 +23,7 @@ $DistDir = Join-Path $ScriptDir "dist"
 $IndexFile = Join-Path $ScriptDir "index.json"
 
 # GitHub raw URL base for download URLs
-$GitHubRawBase = "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master"
+$GitHubRawBase = "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master"
 
 # Store built extensions for index update
 $Script:BuiltExtensions = @()

@@ -26,7 +26,7 @@ DIST_DIR="$SCRIPT_DIR/dist"
 INDEX_FILE="$SCRIPT_DIR/index.json"
 
 # GitHub raw URL base for download URLs
-GITHUB_RAW_BASE="https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master"
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master"
 
 echo -e "${BLUE}==============================================================================${NC}"
 echo -e "${BLUE}                    Tsubaki Extensions Build Script                          ${NC}"
