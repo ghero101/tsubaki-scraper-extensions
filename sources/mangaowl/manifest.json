@@ -1,0 +1,70 @@
+{
+  "manifest_version": 1,
+  "id": "mangaowl",
+  "name": "MangaOwl",
+  "version": "1.3.2",
+  "description": "Scraper for MangaOwl (mangaowl.io), a popular manga aggregator site using WordPress Madara theme.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "mangaowl.io",
+      "www.mangaowl.io"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://mangaowl.io",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "webtoon",
+      "aggregator",
+      "madara"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 5
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/mangaowl-rhai/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/mangaowl-rhai/mangaowl-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "mangaowl-rhai"
+  ]
+}

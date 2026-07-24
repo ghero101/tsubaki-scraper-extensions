@@ -1,0 +1,68 @@
+{
+  "manifest_version": 1,
+  "id": "comix",
+  "name": "Comix",
+  "version": "1.0.5",
+  "description": "Scraper for Comix (comix.to), a modern manga/manhwa/manhua reader with a large library and multiple scanlation groups.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "comix.to",
+      "static.comix.to"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": true,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://comix.to",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "aggregator"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 40,
+    "burst_limit": 8
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/comix/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/comix/comix_latest.zip"
+  },
+  "previous_ids": [
+    "comix-rhai"
+  ]
+}

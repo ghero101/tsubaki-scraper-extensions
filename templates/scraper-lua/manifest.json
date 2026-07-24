@@ -1,0 +1,58 @@
+{
+  "manifest_version": 1,
+  "id": "your-source-id",
+  "name": "Your Source Name",
+  "version": "1.0.0",
+  "description": "Brief description of this source",
+  "author": {
+    "name": "Your Name",
+    "url": "https://github.com/yourusername"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/tsubaki/tsubaki-addons",
+
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+
+  "technology": "lua",
+  "entry_point": {
+    "file": "plugin.lua"
+  },
+
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": ["yoursource.com"],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+
+  "authentication": {
+    "type": "none"
+  },
+
+  "source_info": {
+    "base_url": "https://yoursource.com",
+    "language": "en",
+    "supported_languages": ["en"],
+    "content_rating": "safe",
+    "tags": []
+  },
+
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+
+  "dependencies": {
+    "addons": [],
+    "libraries": {
+      "lua": []
+    }
+  },
+
+  "update": {
+    "url": "",
+    "auto_update": false
+  }
+}

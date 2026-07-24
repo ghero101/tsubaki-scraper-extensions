@@ -1,0 +1,106 @@
+{
+  "manifest_version": 1,
+  "id": "manganato-gg",
+  "name": "MangaNato (Unified)",
+  "version": "1.2.6",
+  "description": "Unified scraper for MangaNato sites including manganato.gg, mangakakalot.gg, nelomanga.net, natomanga.com, and manganato.com. Distributes requests across all mirrors for maximum reliability.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "manganato.gg",
+      "www.manganato.gg",
+      "mangakakalot.gg",
+      "www.mangakakalot.gg",
+      "nelomanga.net",
+      "www.nelomanga.net",
+      "natomanga.com",
+      "www.natomanga.com",
+      "manganato.com",
+      "www.manganato.com",
+      "chapmanganato.to",
+      "chapmanganato.com",
+      "readmanganato.com",
+      "img-r1.2xstorage.com",
+      "imgs-2.2xstorage.com",
+      "storage.waitst.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://www.manganato.gg",
+    "language": "en",
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "aggregator",
+      "mirror-cluster"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+  "settings_schema": {
+    "preferred_mirror": {
+      "type": "select",
+      "label": "Preferred Mirror",
+      "description": "Primary mirror site to use. Others used as fallbacks.",
+      "default": "manganato.gg",
+      "options": [
+        {
+          "value": "manganato.gg",
+          "label": "MangaNato.gg"
+        },
+        {
+          "value": "mangakakalot.gg",
+          "label": "MangaKakalot.gg"
+        },
+        {
+          "value": "nelomanga.net",
+          "label": "NeloManga.net"
+        },
+        {
+          "value": "natomanga.com",
+          "label": "NatoManga.com"
+        }
+      ]
+    }
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/manganato-gg-rhai/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/manganato-gg-rhai/manganato-gg-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "manganato-gg-rhai"
+  ]
+}

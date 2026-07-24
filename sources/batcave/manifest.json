@@ -1,0 +1,102 @@
+{
+  "manifest_version": 2,
+  "id": "batcave",
+  "name": "BatCave",
+  "version": "1.0.9",
+  "description": "Scraper for BatCave (batcave.biz) - Read western comics online including Marvel, DC, Image, Dark Horse, and more.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "batcave.biz",
+      "batcave.cc",
+      "batcave.club"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_metadata": true,
+    "get_covers": true,
+    "get_recommendations": false,
+    "get_comments": false,
+    "search_artwork": false,
+    "tracking": false
+  },
+  "authentication": {
+    "type": "optional",
+    "credentials_schema": {
+      "fields": [
+        {
+          "name": "username",
+          "type": "text",
+          "label": "Username",
+          "description": "Your BatCave account username (optional)",
+          "required": false
+        },
+        {
+          "name": "password",
+          "type": "password",
+          "label": "Password",
+          "description": "Your BatCave account password",
+          "required": false
+        }
+      ]
+    }
+  },
+  "source_info": {
+    "base_url": "https://batcave.biz",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "comics",
+      "western",
+      "marvel",
+      "dc",
+      "image",
+      "dark-horse"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 20,
+    "burst_limit": 3
+  },
+  "settings_schema": {
+    "use_mobile_ua": {
+      "type": "toggle",
+      "label": "Use Mobile User-Agent",
+      "description": "Use mobile user agent for better compatibility (may bypass some restrictions)",
+      "default": true
+    }
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/batcave-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/batcave-rhai/batcave-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "batcave-rhai"
+  ]
+}

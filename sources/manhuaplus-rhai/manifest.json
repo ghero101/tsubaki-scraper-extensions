@@ -1,0 +1,63 @@
+{
+  "manifest_version": 1,
+  "id": "manhuaplus",
+  "name": "ManhuaPlus",
+  "version": "1.0.1",
+  "description": "ManhuaPlus - Chinese manhua reader with large collection",
+  "author": {
+    "name": "Tsubaki Team",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "manhuaplus.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://manhuaplus.com",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "manhua",
+      "manga",
+      "aggregator"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 3
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/manhuaplus-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/manhuaplus-rhai/manhuaplus-rhai_latest.zip"
+  }
+}

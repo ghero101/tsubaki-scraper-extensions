@@ -1,0 +1,61 @@
+{
+  "manifest_version": 1,
+  "id": "demonicscans",
+  "name": "DemonicScans",
+  "version": "1.0.8",
+  "description": "Scraper for DemonicScans manga scanlation site.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "demonicscans.com",
+      "demonicscans.org"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://demonicscans.org",
+    "language": "en",
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "scanlation"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 5
+  },
+  "update": {
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/demonicscans/demonicscans_latest.zip"
+  },
+  "previous_ids": [
+    "demonicscans-rhai"
+  ]
+}

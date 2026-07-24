@@ -1,0 +1,123 @@
+{
+  "manifest_version": 1,
+  "id": "heancms",
+  "name": "HeanCMS",
+  "version": "1.1.5",
+  "description": "Framework parser for HeanCMS-based manga sites (OmegaScans, ReaperScans, QuantumScans, etc.). Configure the base URL in settings to use with your preferred HeanCMS site.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "omegascans.org",
+      "api.omegascans.org",
+      "media.omegascans.org",
+      "reaperscans.com",
+      "api.reaperscans.com",
+      "media.reaperscans.com",
+      "quantumscans.org",
+      "api.quantumscans.org",
+      "luminousscans.com",
+      "api.luminousscans.com",
+      "flamecomics.com",
+      "api.flamecomics.com",
+      "2xstorage.com",
+      "*"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "optional",
+    "fields": [
+      {
+        "name": "email",
+        "type": "text",
+        "label": "Email",
+        "required": false
+      },
+      {
+        "name": "password",
+        "type": "password",
+        "label": "Password",
+        "required": false
+      }
+    ]
+  },
+  "settings": [
+    {
+      "key": "base_url",
+      "type": "text",
+      "label": "Base URL",
+      "description": "The base URL of the HeanCMS site (e.g., https://omegascans.org)",
+      "default": "https://omegascans.org",
+      "required": true
+    },
+    {
+      "key": "api_url",
+      "type": "text",
+      "label": "API URL (Optional)",
+      "description": "Custom API URL if different from default. Leave empty to auto-detect (api.domain.com).",
+      "default": "",
+      "required": false
+    },
+    {
+      "key": "use_new_chapter_endpoint",
+      "type": "boolean",
+      "label": "Use New Chapter Endpoint",
+      "description": "Enable if the site uses /chapter/query instead of seasons in series response",
+      "default": true
+    }
+  ],
+  "source_info": {
+    "base_url": "https://omegascans.org",
+    "language": "en",
+    "supported_languages": [
+      "en",
+      "es",
+      "pt-br"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "heancms",
+      "manhwa",
+      "manga",
+      "webtoon",
+      "scanlation",
+      "framework"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 5
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/heancms-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/heancms-rhai/heancms-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "heancms-rhai"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "manifest_version": 1,
+  "id": "mangareader",
+  "name": "MangaReader",
+  "version": "1.0.3",
+  "description": "MangaReader.to - Massive manga, manhwa, and manhua library",
+  "author": {
+    "name": "Tsubaki Team",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "mangareader.to",
+      "c-1.mreadercdn.com",
+      "c1.mreadercdn.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://mangareader.to",
+    "language": "en",
+    "supported_languages": [
+      "en",
+      "ja",
+      "ko",
+      "zh",
+      "fr"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "aggregator"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 20,
+    "burst_limit": 2
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/mangareader-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/mangareader-rhai/mangareader-rhai_latest.zip"
+  }
+}

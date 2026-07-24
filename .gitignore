@@ -1,0 +1,20 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+*.pyc
+__pycache__/
+*.luac
+target/
+
+# Temp files
+*.tmp
+*.bak
+*.log

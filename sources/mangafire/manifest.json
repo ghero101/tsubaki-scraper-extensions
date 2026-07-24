@@ -1,0 +1,104 @@
+{
+  "manifest_version": 1,
+  "id": "mangafire",
+  "name": "MangaFire",
+  "version": "1.1.3",
+  "description": "Scraper for MangaFire (mangafire.to), a popular manga aggregator with multi-language support and a large catalog.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "mangafire.to",
+      "static.mfcdn.cc",
+      "s.mfcdn.cc"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://mangafire.to",
+    "language": "en",
+    "supported_languages": [
+      "en",
+      "es-la",
+      "fr",
+      "pt-br",
+      "ja"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "aggregator",
+      "multi-language"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 5
+  },
+  "settings_schema": {
+    "preferred_language": {
+      "type": "select",
+      "label": "Preferred Language",
+      "description": "Language for chapter listings",
+      "default": "en",
+      "options": [
+        {
+          "value": "en",
+          "label": "English"
+        },
+        {
+          "value": "es-la",
+          "label": "Spanish (Latin America)"
+        },
+        {
+          "value": "fr",
+          "label": "French"
+        },
+        {
+          "value": "pt-br",
+          "label": "Portuguese (Brazil)"
+        },
+        {
+          "value": "ja",
+          "label": "Japanese"
+        }
+      ]
+    }
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/mangafire-rhai/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/mangafire-rhai/mangafire-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "mangafire-rhai"
+  ]
+}

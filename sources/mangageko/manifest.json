@@ -1,0 +1,69 @@
+{
+  "manifest_version": 1,
+  "id": "mangageko",
+  "name": "MangaGeko",
+  "version": "1.1.3",
+  "description": "Scraper for MangaGeko (mgeko.cc), a popular manga aggregator site with manga, manhwa, and manhua in English.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "mgeko.cc",
+      "www.mgeko.cc",
+      "mangageko.com",
+      "www.mangageko.com",
+      "imgsrv4.com",
+      "mangamob.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://www.mgeko.cc",
+    "language": "en",
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "aggregator"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/mangageko-rhai/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/mangageko-rhai/mangageko-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "mangageko-rhai"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "manifest_version": 1,
+  "id": "comick",
+  "name": "ComicK",
+  "version": "1.0.3",
+  "description": "ComicK - Massive manga, manhwa, and manhua library with multi-language support",
+  "author": {"name": "Tsubaki Team", "url": "https://github.com/tsubaki"},
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {"file": "plugin.rhai"},
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": ["comick.art", "comick.live", "cdn1.comicknew.pictures"],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {"type": "none"},
+  "source_info": {
+    "base_url": "https://comick.art",
+    "language": "en",
+    "supported_languages": ["en", "ja", "ko", "zh", "es", "fr", "pt", "de", "it", "ru"],
+    "content_rating": "suggestive",
+    "tags": ["manga", "manhwa", "manhua", "aggregator", "multi-language"]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 5
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/comick-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/comick-rhai/comick-rhai_latest.zip"
+  }
+}

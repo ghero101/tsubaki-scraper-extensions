@@ -1,0 +1,85 @@
+{
+  "manifest_version": 1,
+  "id": "dynastyscans",
+  "name": "Dynasty Scans",
+  "version": "1.0.11",
+  "description": "Scraper for Dynasty Scans (dynasty-scans.com), a yuri/shoujo-ai manga reader featuring doujins, anthologies, and original series.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "dynasty-scans.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true
+  },
+  "source_info": {
+    "base_url": "https://dynasty-scans.com",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "yuri",
+      "shoujo-ai",
+      "doujin",
+      "anthology",
+      "manga"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+  "settings_schema": {
+    "content_filter": {
+      "type": "select",
+      "label": "Content Filter",
+      "description": "Filter content by rating",
+      "default": "all",
+      "options": [
+        {
+          "value": "all",
+          "label": "All Content"
+        },
+        {
+          "value": "safe",
+          "label": "Safe Only (exclude NSFW)"
+        }
+      ]
+    }
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/dynastyscans-rhai/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/dynastyscans-rhai/dynastyscans-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "dynastyscans-rhai"
+  ]
+}

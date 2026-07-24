@@ -1,0 +1,190 @@
+{
+  "manifest_version": 2,
+  "id": "mangadex",
+  "name": "MangaDex",
+  "version": "1.8.6",
+  "description": "MangaDex manga source - the largest free manga library with multi-language support. Converted to Rhai with setting support.",
+  "author": {
+    "name": "Tsubaki Team",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "api.mangadex.org",
+      "mangadex.org",
+      "uploads.mangadex.org",
+      "auth.mangadex.org"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_metadata": true,
+    "get_covers": true,
+    "get_recommendations": false,
+    "get_comments": false,
+    "search_artwork": false,
+    "tracking": false,
+    "login": true
+  },
+  "authentication": {
+    "type": "optional",
+    "methods": [
+      "oauth"
+    ],
+    "login_url": "https://mangadex.org/settings",
+    "note": "Authentication required for erotica/pornographic content. Create a Personal API Client at https://mangadex.org/settings to get client credentials.",
+    "credentials_schema": {
+      "fields": [
+        {
+          "name": "client_id",
+          "label": "Client ID",
+          "type": "text",
+          "required": true,
+          "description": "Personal API Client ID from MangaDex settings"
+        },
+        {
+          "name": "client_secret",
+          "label": "Client Secret",
+          "type": "password",
+          "required": true,
+          "description": "Personal API Client Secret from MangaDex settings"
+        },
+        {
+          "name": "username",
+          "label": "Username",
+          "type": "text",
+          "required": true,
+          "description": "Your MangaDex account username"
+        },
+        {
+          "name": "password",
+          "label": "Password",
+          "type": "password",
+          "required": true,
+          "description": "Your MangaDex account password"
+        }
+      ]
+    }
+  },
+  "source_info": {
+    "base_url": "https://api.mangadex.org",
+    "language": "en",
+    "supported_languages": [
+      "en",
+      "ja",
+      "ko",
+      "zh",
+      "es",
+      "fr",
+      "de",
+      "it",
+      "pt-br",
+      "ru"
+    ],
+    "content_rating": "all",
+    "tags": [
+      "official-api",
+      "multi-language",
+      "community",
+      "free"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 40,
+    "burst_limit": 5
+  },
+  "settings_schema": {
+    "client_id": {
+      "type": "text",
+      "label": "Client ID",
+      "description": "Personal API Client ID from MangaDex settings (required for 18+ content)",
+      "credential": true,
+      "default": ""
+    },
+    "client_secret": {
+      "type": "password",
+      "label": "Client Secret",
+      "description": "Personal API Client Secret from MangaDex settings",
+      "credential": true,
+      "default": ""
+    },
+    "username": {
+      "type": "text",
+      "label": "MangaDex Username",
+      "description": "Your MangaDex account username",
+      "credential": true,
+      "default": ""
+    },
+    "password": {
+      "type": "password",
+      "label": "MangaDex Password",
+      "description": "Your MangaDex account password",
+      "credential": true,
+      "default": ""
+    },
+    "include_adult_content": {
+      "type": "boolean",
+      "label": "Include Adult Content (18+)",
+      "description": "Enable to show erotica and pornographic content. Requires all 4 credentials above.",
+      "default": false
+    },
+    "preferred_language": {
+      "type": "select",
+      "label": "Preferred Language",
+      "description": "Preferred language for titles and chapters",
+      "default": "en",
+      "options": [
+        {
+          "value": "en",
+          "label": "English"
+        },
+        {
+          "value": "ja",
+          "label": "Japanese"
+        },
+        {
+          "value": "ko",
+          "label": "Korean"
+        },
+        {
+          "value": "zh",
+          "label": "Chinese"
+        },
+        {
+          "value": "es",
+          "label": "Spanish"
+        },
+        {
+          "value": "fr",
+          "label": "French"
+        }
+      ]
+    }
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/mangadex-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/mangadex-rhai/mangadex-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "mangadex-rhai"
+  ]
+}

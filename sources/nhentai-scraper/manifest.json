@@ -1,0 +1,66 @@
+{
+  "manifest_version": 2,
+  "id": "nhentai-scraper",
+  "name": "nhentai (Scraper)",
+  "version": "1.1.1",
+  "description": "nhentai doujinshi/manga source — HTML-scraping variant via FlareSolverr. Use this when the JSON API (nhentai.net/api) is Cloudflare/IP-blocked; it parses the rendered web pages instead. Contains EXPLICIT adult content - 18+ only.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "category": "manga",
+  "icon_path": "icon.png",
+  "nsfw": true,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "nhentai.net",
+      "tsubaki-browser"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true,
+    "requires_proxy": true,
+    "notes": "Fetches nhentai web pages through FlareSolverr (Cloudflare-protected) and parses the rendered HTML. The single 'nhentai.net' allowed domain covers t./i. image CDNs via subdomain match."
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://nhentai.net",
+    "language": "en",
+    "supported_languages": ["en", "ja", "zh"],
+    "content_rating": "explicit",
+    "tags": ["nsfw", "adult", "doujinshi", "manga", "hentai", "18+", "explicit"]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 20,
+    "burst_limit": 2
+  },
+  "warnings": [
+    "WARNING: This addon provides access to EXPLICIT adult content.",
+    "You MUST be 18 years or older to use this addon.",
+    "By installing and using this addon, you confirm you are at least 18 years of age and that viewing adult content is legal in your jurisdiction."
+  ],
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/nhentai-scraper/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/nhentai-scraper/nhentai-scraper_latest.zip"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "manifest_version": 2,
+  "id": "nhentai",
+  "name": "nhentai",
+  "version": "2.0.1",
+  "description": "nhentai doujinshi/manga source. Contains EXPLICIT adult content - 18+ only. By using this addon, you confirm you are of legal age.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "category": "manga",
+  "icon_path": "icon.png",
+  "nsfw": true,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "nhentai.net",
+      "tsubaki-browser"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true,
+    "requires_proxy": true,
+    "notes": "Fetches nhentai web pages through FlareSolverr (which egresses through the VPN) and parses the rendered HTML. The JSON API (nhentai.net/api) is Cloudflare/IP-blocked even via FlareSolverr, so this scrapes the rendered pages instead. The single 'nhentai.net' allowed domain covers the t./i. image CDNs via subdomain match."
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://nhentai.net",
+    "language": "en",
+    "supported_languages": [
+      "en",
+      "ja",
+      "zh"
+    ],
+    "content_rating": "explicit",
+    "tags": [
+      "nsfw",
+      "adult",
+      "doujinshi",
+      "manga",
+      "hentai",
+      "18+",
+      "explicit"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 3
+  },
+  "settings_schema": {
+    "preferred_language": {
+      "type": "select",
+      "label": "Preferred Language",
+      "description": "Preferred language for content (when available)",
+      "default": "english",
+      "options": [
+        {
+          "value": "english",
+          "label": "English"
+        },
+        {
+          "value": "japanese",
+          "label": "Japanese"
+        },
+        {
+          "value": "chinese",
+          "label": "Chinese"
+        }
+      ]
+    },
+    "results_per_page": {
+      "type": "number",
+      "label": "Results Per Page",
+      "description": "Number of results to fetch per search page",
+      "default": 25,
+      "min": 10,
+      "max": 25
+    }
+  },
+  "warnings": [
+    "WARNING: This addon provides access to EXPLICIT adult content.",
+    "You MUST be 18 years or older to use this addon.",
+    "This content is NOT suitable for minors under any circumstances.",
+    "By installing and using this addon, you confirm that:",
+    "  - You are at least 18 years of age",
+    "  - Viewing adult content is legal in your jurisdiction",
+    "  - You understand this contains sexually explicit material",
+    "The developers are not responsible for any misuse of this addon."
+  ],
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/nhentai-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/nhentai-rhai/nhentai-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "nhentai-rhai"
+  ]
+}

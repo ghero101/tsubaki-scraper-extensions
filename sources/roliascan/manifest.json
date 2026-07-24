@@ -1,0 +1,69 @@
+{
+  "manifest_version": 1,
+  "id": "roliascan",
+  "name": "RoliaScan",
+  "version": "1.1.6",
+  "description": "Scraper for RoliaScan manga scanlation site.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "roliascann.com",
+      "www.roliascann.com",
+      "roliascan.com",
+      "cdn2.fandommanga.xyz",
+      "fandommanga.xyz",
+      "cdn1.love4awalk.xyz",
+      "cdn2.love4awalk.xyz",
+      "love4awalk.xyz"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://roliascann.com",
+    "language": "en",
+    "content_rating": "suggestive",
+    "tags": [
+      "manga",
+      "manhwa",
+      "scanlation"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/roliascan-rhai/manifest.json",
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/roliascan-rhai/roliascan-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "roliascan-rhai"
+  ]
+}

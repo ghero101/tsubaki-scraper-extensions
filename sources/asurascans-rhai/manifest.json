@@ -1,0 +1,68 @@
+{
+  "manifest_version": 1,
+  "id": "asurascans",
+  "name": "Asura Scans",
+  "version": "2.0.0",
+  "nsfw": false,
+  "description": "Asura Scans - Popular scanlation group for manhwa and manga",
+  "author": {
+    "name": "Tsubaki Team",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "asurascans.com",
+      "asuracomic.net",
+      "asurascan.net",
+      "gg.asuracomic.net",
+      "gg.asurascans.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": true,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://asurascans.com",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "scanlation",
+      "manhwa",
+      "manga",
+      "webtoon"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 3
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/asurascans-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/asurascans-rhai/asurascans-rhai_latest.zip"
+  }
+}

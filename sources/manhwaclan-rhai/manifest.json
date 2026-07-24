@@ -1,0 +1,68 @@
+{
+  "manifest_version": 1,
+  "id": "manhwaclan",
+  "name": "ManhwaClan",
+  "version": "1.1.3",
+  "description": "ManhwaClan - Manhwa, manga, and manhua reader",
+  "deprecated": {
+    "is_deprecated": true,
+    "reason": "Site origin is down (Cloudflare 521 — web server unreachable). Archived; remove the deprecated flag if it comes back online.",
+    "sunset_date": "2026-06-16"
+  },
+  "author": {
+    "name": "Tsubaki Team",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "manhwaclan.com"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://manhwaclan.com",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "suggestive",
+    "tags": [
+      "manhwa",
+      "manga",
+      "manhua"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 3
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/manhwaclan-rhai/manifest.json",
+    "auto_update": true,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/manhwaclan-rhai/manhwaclan-rhai_latest.zip"
+  }
+}

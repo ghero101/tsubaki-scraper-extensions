@@ -1,0 +1,75 @@
+{
+  "manifest_version": 1,
+  "id": "kagane",
+  "name": "Kagane",
+  "version": "1.12.9",
+  "description": "Scraper for Kagane (kagane.to), a manga reading site with a large collection including exclusive content.",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/tsubaki"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": true,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "browser_automation",
+    "allowed_domains": [
+      "kagane.to",
+      "www.kagane.to",
+      "yuzuki.kagane.to",
+      "akari.kagane.to",
+      "kagane.org",
+      "www.kagane.org",
+      "yuzuki.kagane.org",
+      "akari.kagane.org",
+      "tsubaki-browser"
+    ],
+    "requires_cookies": true,
+    "requires_javascript": true,
+    "cloudflare_protected": true
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://kagane.to",
+    "language": "en",
+    "supported_languages": [
+      "en"
+    ],
+    "content_rating": "nsfw",
+    "tags": [
+      "manga",
+      "manhwa",
+      "manhua",
+      "nsfw"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 5
+  },
+  "update": {
+    "url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/sources/kagane-rhai/manifest.json",
+    "auto_update": false,
+    "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-extensions/master/dist/kagane-rhai/kagane-rhai_latest.zip"
+  },
+  "previous_ids": [
+    "kagane-rhai"
+  ]
+}
