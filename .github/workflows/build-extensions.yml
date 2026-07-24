@@ -1,0 +1,251 @@
+# =============================================================================
+# Tsubaki Extensions - Build & Release Workflow
+# =============================================================================
+# This workflow:
+#   - Runs nightly at 2:00 AM UTC
+#   - Can be triggered manually
+#   - Builds all extensions and updates index.json
+#   - Commits and pushes changes if any
+# =============================================================================
+
+name: Build Extensions
+
+on:
+  # Run nightly at 2:00 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Force rebuild all extensions'
+        required: false
+        default: 'false'
+        type: boolean
+      single_extension:
+        description: 'Build only this extension (leave empty for all)'
+        required: false
+        default: ''
+        type: string
+
+  # Run on push to sources/ directory
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'sources/**'
+      - 'index.json'
+      - 'build.sh'
+      - '.github/workflows/build-extensions.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    env:
+      FORCE_REBUILD: ${{ inputs.force_rebuild }}
+      SINGLE_EXTENSION: ${{ inputs.single_extension }}
+      RUN_NUMBER: ${{ github.run_number }}
+      EVENT_NAME: ${{ github.event_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq zip
+
+      - name: Make build script executable
+        run: chmod +x build.sh
+
+      - name: Build extensions
+        run: |
+          if [ "$FORCE_REBUILD" = "true" ]; then
+            ./build.sh --clean
+          elif [ -n "$SINGLE_EXTENSION" ]; then
+            # Validate single extension name (alphanumeric, dash, underscore only)
+            if echo "$SINGLE_EXTENSION" | grep -qE '^[a-zA-Z0-9_-]+$'; then
+              ./build.sh --single "$SINGLE_EXTENSION"
+            else
+              echo "Invalid extension name"
+              exit 1
+            fi
+          else
+            ./build.sh
+          fi
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes to commit"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected:"
+            git diff --cached --stat
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Get list of updated extensions for the commit message. (Note:
+          # `echo "" | wc -l` is 1, not 0 — use grep -c to count real lines so an
+          # index-only run doesn't produce "Update extensions ()".)
+          UPDATED=$(git diff --cached --name-only | grep -E '^dist/.*\.zip$' | sed 's|dist/||;s|/.*||' | sort -u)
+          UPDATED_COUNT=$(printf '%s' "$UPDATED" | grep -c .)
+
+          if [ "$UPDATED_COUNT" -eq 0 ]; then
+            COMMIT_MSG="build: sync index.json"
+          elif [ "$UPDATED_COUNT" -gt 5 ]; then
+            COMMIT_MSG="build: update $UPDATED_COUNT extensions"
+          else
+            EXTENSIONS=$(printf '%s' "$UPDATED" | paste -sd, -)
+            COMMIT_MSG="build: update extensions ($EXTENSIONS)"
+          fi
+
+          git commit -m "$COMMIT_MSG
+
+          Automated build by GitHub Actions
+          Run: $RUN_NUMBER
+          Triggered by: $EVENT_NAME"
+
+          # Push; if the remote moved since checkout (a concurrent run/commit),
+          # rebase onto it and retry once instead of failing the job.
+          git push || { git pull --rebase origin "$(git branch --show-current)" && git push; }
+
+      - name: Create build summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Extension | Version | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|---------|------|" >> $GITHUB_STEP_SUMMARY
+
+          for dir in dist/*/; do
+            if [ -d "$dir" ]; then
+              EXT_NAME=$(basename "$dir")
+              LATEST_ZIP="$dir${EXT_NAME}_latest.zip"
+              if [ -f "$LATEST_ZIP" ]; then
+                # Get version from zip filename
+                VERSION_ZIP=$(ls -1 "$dir" | grep -v latest | head -1)
+                VERSION=$(echo "$VERSION_ZIP" | sed "s/${EXT_NAME}_//" | sed 's/\.zip$//' | tr '-' '.')
+                SIZE=$(du -h "$LATEST_ZIP" | cut -f1)
+                echo "| $EXT_NAME | $VERSION | $SIZE |" >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Total extensions:** $(ls -1d dist/*/ 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+  # Validate extensions after build
+  validate:
+    runs-on: ubuntu-latest
+    needs: build
+
+    env:
+      REF_NAME: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Pull latest changes
+        run: git pull origin "$REF_NAME"
+
+      - name: Validate index.json
+        run: |
+          echo "Validating index.json..."
+
+          # Check if index.json is valid JSON
+          if ! jq empty index.json 2>/dev/null; then
+            echo "::error::index.json is not valid JSON"
+            exit 1
+          fi
+
+          # Check required fields
+          VERSION=$(jq -r '.version' index.json)
+          UPDATED=$(jq -r '.updated_at' index.json)
+          ADDON_COUNT=$(jq '.addons | length' index.json)
+
+          echo "Index version: $VERSION"
+          echo "Last updated: $UPDATED"
+          echo "Addon count: $ADDON_COUNT"
+
+          if [ "$ADDON_COUNT" -eq 0 ]; then
+            echo "::warning::No addons found in index.json"
+          fi
+
+      - name: Validate extension manifests
+        run: |
+          echo "Validating extension manifests..."
+          ERRORS=0
+
+          for manifest in sources/*/manifest.json; do
+            if [ -f "$manifest" ]; then
+              EXT_DIR=$(dirname "$manifest")
+              EXT_NAME=$(basename "$EXT_DIR")
+
+              # Check if manifest is valid JSON
+              if ! jq empty "$manifest" 2>/dev/null; then
+                echo "::error::$EXT_NAME: manifest.json is not valid JSON"
+                ERRORS=$((ERRORS + 1))
+                continue
+              fi
+
+              # Check required fields
+              ID=$(jq -r '.id' "$manifest")
+              VERSION=$(jq -r '.version' "$manifest")
+              NAME=$(jq -r '.name' "$manifest")
+
+              if [ "$ID" = "null" ] || [ -z "$ID" ]; then
+                echo "::error::$EXT_NAME: missing 'id' field"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              if [ "$VERSION" = "null" ] || [ -z "$VERSION" ]; then
+                echo "::error::$EXT_NAME: missing 'version' field"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              if [ "$NAME" = "null" ] || [ -z "$NAME" ]; then
+                echo "::warning::$EXT_NAME: missing 'name' field"
+              fi
+
+              # Check if corresponding zip exists
+              VERSION_FILENAME=$(echo "$VERSION" | tr '.' '-')
+              ZIP_PATH="dist/$EXT_NAME/${EXT_NAME}_${VERSION_FILENAME}.zip"
+              if [ ! -f "$ZIP_PATH" ]; then
+                echo "::warning::$EXT_NAME: zip file not found at $ZIP_PATH"
+              fi
+            fi
+          done
+
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::Found $ERRORS validation errors"
+            exit 1
+          fi
+
+          echo "All validations passed!"
+
+      - name: Validation summary
+        run: |
+          echo "## Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ":white_check_mark: All validations passed" >> $GITHUB_STEP_SUMMARY
