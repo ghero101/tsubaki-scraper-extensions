@@ -1,14 +1,14 @@
 // Raven Scans Scraper Add-on (Rhai)
-// Flavor/MangaStream WordPress theme scraper for ravenscans.org
+// Flavor/MangaStream WordPress theme scraper for ravenscans.net
 //
 // Raven Scans uses the Flavor/Flavor-Starter WordPress theme (MangaStream clone),
 // which has different CSS classes from the Madara theme.
 //
 // URL Patterns:
 //   Search: /?s={query} (WordPress default search)
-//   Browse: /manga/ with pagination via /manga/page/{page}/
-//   Series: /manga/{slug}/
-//   Chapter: /{slug}-chapter-{number}/ (flat URL, NOT under /manga/)
+//   Browse: /series/ with pagination via /series/page/{page}/
+//   Series: /series/{slug}/
+//   Chapter: /{slug}-chapter-{number}/ (flat URL, NOT under /series/)
 //   Reader: chapter page with #readerarea img or ts_reader.run() JSON
 //
 // Flavor/MangaStream CSS patterns:
@@ -33,7 +33,7 @@
 //          regex_find_all(pattern, text)
 //   url_encode(text) -> string
 
-const BASE_URL = "https://ravenscans.org";
+const BASE_URL = "https://ravenscans.net";
 
 // ============================================================================
 // Helper Functions
@@ -116,10 +116,10 @@ fn get_source_info() {
 }
 
 /// Extract manga slug from a URL
-/// Series URL pattern: /manga/{slug}/
+/// Series URL pattern: /series/{slug}/
 fn extract_slug(url) {
-    if url.contains("/manga/") {
-        let parts = url.split("/manga/");
+    if url.contains("/series/") {
+        let parts = url.split("/series/");
         if parts.len() > 1 {
             let after = parts[1];
             // Split by / and get the first non-empty segment (the slug)
@@ -137,7 +137,7 @@ fn extract_slug(url) {
     let parts = url.split("/");
     let last_non_empty = "";
     for part in parts {
-        if part != "" && !part.contains("?") && !part.contains(".") && part != "http:" && part != "https:" && part != "ravenscans.org" && part != "manga" {
+        if part != "" && !part.contains("?") && !part.contains(".") && part != "http:" && part != "https:" && part != "ravenscans.net" && part != "series" {
             last_non_empty = part;
         }
     }
@@ -360,7 +360,7 @@ fn search_series(query, page, auth) {
         }
 
         // Only process manga links
-        if !href.contains("/manga/") {
+        if !href.contains("/series/") {
             continue;
         }
         // Skip chapter links
@@ -487,10 +487,10 @@ fn browse(page, category, auth) {
         return get_latest_updates(page, auth);
     }
 
-    // Flavor theme browse: /manga/ with optional ordering
-    let url = `${BASE_URL}/manga/`;
+    // Flavor theme browse: /series/ with optional ordering
+    let url = `${BASE_URL}/series/`;
     if page > 1 {
-        url = `${BASE_URL}/manga/page/${page}/`;
+        url = `${BASE_URL}/series/page/${page}/`;
     }
 
     // Flavor theme may support ?order=popular, ?order=update, etc.
@@ -554,7 +554,7 @@ fn parse_series_listing(html) {
             continue;
         }
 
-        if !href.contains("/manga/") {
+        if !href.contains("/series/") {
             continue;
         }
         if href.contains("chapter") {
@@ -631,7 +631,7 @@ fn get_series(id_or_url, auth) {
     let slug = id_or_url;
 
     if !id_or_url.starts_with("http") {
-        url = `${BASE_URL}/manga/${id_or_url}/`;
+        url = `${BASE_URL}/series/${id_or_url}/`;
     } else {
         slug = extract_slug(id_or_url);
     }
@@ -948,13 +948,13 @@ fn get_series(id_or_url, auth) {
 /// Get all chapters for a series
 /// Flavor theme lists chapters on the series page in #chapterlist or .eplister
 /// NOTE: Raven Scans chapter URLs use flat pattern: /{slug}-chapter-{number}/
-///       (NOT /manga/{slug}/chapter-{number}/)
+///       (NOT /series/{slug}/chapter-{number}/)
 fn get_chapters(series_id, auth) {
     let url = series_id;
     let slug = series_id;
 
     if !series_id.starts_with("http") {
-        url = `${BASE_URL}/manga/${series_id}/`;
+        url = `${BASE_URL}/series/${series_id}/`;
     } else {
         slug = extract_slug(series_id);
     }
@@ -1217,9 +1217,9 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest manga updates
 fn get_latest_updates(page, auth) {
-    let url = `${BASE_URL}/manga/`;
+    let url = `${BASE_URL}/series/`;
     if page > 1 {
-        url = `${BASE_URL}/manga/page/${page}/`;
+        url = `${BASE_URL}/series/page/${page}/`;
     }
     // Flavor theme: ?order=update for latest
     url += "?order=update";

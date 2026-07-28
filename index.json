@@ -1,6 +1,6 @@
 {
   "version": 91,
-  "updated_at": "2026-07-22T09:39:15Z",
+  "updated_at": "2026-07-28T23:07:36Z",
   "addons": [
     {
       "id": "asurascans",
@@ -1634,16 +1634,16 @@
     {
       "id": "ravenscans",
       "name": "Raven Scans",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "description": "Raven Scans - Manga and manhwa scanlation group",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/ravenscans-rhai/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/ravenscans-rhai/ravenscans-rhai_1-0-2.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/ravenscans-rhai/ravenscans-rhai_1-0-3.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/ravenscans-rhai/manifest.json",
-      "latest_version": "1.0.2",
+      "latest_version": "1.0.3",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/ravenscans-rhai/ravenscans-rhai_1-0-0.zip",
@@ -1659,6 +1659,11 @@
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/ravenscans-rhai/ravenscans-rhai_1-0-2.zip",
           "released_at": "2026-05-20T12:28:22Z",
           "changelog": "Updated"
+        },
+        "1.0.3": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/ravenscans-rhai/ravenscans-rhai_1-0-3.zip",
+          "released_at": "2026-07-28T23:07:36Z",
+          "changelog": "Fix broken browse: site moved to ravenscans.net and switched to the mangareader theme (series archive at /series/)."
         }
       }
     },
