@@ -1,6 +1,6 @@
 {
   "version": 91,
-  "updated_at": "2026-07-28T23:07:36Z",
+  "updated_at": "2026-07-29T00:42:04Z",
   "addons": [
     {
       "id": "asurascans",
@@ -705,16 +705,16 @@
     {
       "id": "roliascan",
       "name": "RoliaScan",
-      "version": "1.1.6",
+      "version": "1.1.7",
       "description": "Scraper for RoliaScan manga scanlation site.",
       "author": "Tsubaki Community",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/roliascan/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/roliascan/roliascan_1-1-6.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/roliascan/roliascan_1-1-7.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/roliascan/manifest.json",
-      "latest_version": "1.1.6",
+      "latest_version": "1.1.7",
       "versions": {
         "1.1.6": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/roliascan/roliascan_1-1-6.zip",
@@ -740,6 +740,11 @@
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/roliascan/roliascan_1-1-5.zip",
           "changelog": "Updated",
           "released_at": "2026-05-20T12:28:22Z"
+        },
+        "1.1.7": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/roliascan/roliascan_1-1-7.zip",
+          "released_at": "2026-07-29T00:42:04Z",
+          "changelog": "Fix broken browse: site moved to roliascan.com and redesigned (mangapeak theme); catalogue now at /browse/ and JS-rendered (FlareSolverr)."
         }
       },
       "previous_ids": [

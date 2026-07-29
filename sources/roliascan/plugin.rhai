@@ -7,7 +7,7 @@
 //   JSON: json_parse(text)
 //   Utility: url_encode(text), regex_match(pattern, text), regex_find(pattern, text)
 
-const BASE_URL = "https://roliascann.com";
+const BASE_URL = "https://roliascan.com";
 
 fn get_headers() {
     #{
@@ -420,13 +420,13 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest updates for browsing
 fn get_latest_updates(page, auth) {
-    // RoliaScan uses /manga?page=X for pagination (up to 30 pages)
-    let url = `${BASE_URL}/manga`;
-    if page > 1 {
-        url = `${BASE_URL}/manga?page=${page}`;
-    }
+    // Mangapeak theme (2026 redesign): the catalogue lives at /browse/ and the
+    // card grid is injected by JavaScript, so a static fetch returns only a
+    // couple of nav links — we must render it via FlareSolverr. ?page=N serves
+    // the same first page (pagination is infinite-scroll), so one rendered page.
+    let url = `${BASE_URL}/browse/`;
 
-    let html = fetch_html(url);
+    let html = fetch_rendered(url);
     let doc = html_parse(html);
     let series = [];
 
@@ -498,20 +498,17 @@ fn get_latest_updates(page, auth) {
         }
     }
 
-    // RoliaScan has up to 30 pages of manga
-    let has_more = page < 30 && series.len() > 0;
+    // Single rendered page (see above) — no server-side pagination to follow.
+    let has_more = false;
     #{ series: series, has_more: has_more }
 }
 
 /// Get popular manga (uses manga listing with pagination)
 fn get_popular(page, auth) {
-    // RoliaScan uses /manga?page=X for pagination
-    let url = `${BASE_URL}/manga`;
-    if page > 1 {
-        url = `${BASE_URL}/manga?page=${page}`;
-    }
+    // Mangapeak /browse/ grid is JS-injected (see get_latest_updates) — render it.
+    let url = `${BASE_URL}/browse/`;
 
-    let html = fetch_html(url);
+    let html = fetch_rendered(url);
     let doc = html_parse(html);
     let series = [];
 
