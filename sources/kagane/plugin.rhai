@@ -69,29 +69,67 @@ fn extract_json_from_html(html) {
     html
 }
 
-/// GET from Yuzuki API (with Cloudflare fallback via FlareSolverr).
+/// Is this response a Cloudflare block rather than the JSON we asked for?
+/// rquest returns "" when CF drops the request; a challenge/interstitial is
+/// HTML — so any body that isn't JSON-shaped is treated as blocked.
+fn is_blocked(body) {
+    if body == () || body == "" { return true; }
+    let t = body.trim();
+    !(t.starts_with("{") || t.starts_with("["))
+}
+
+/// Solve Cloudflare via FlareSolverr and return request headers carrying the
+/// cf_clearance cookie + the EXACT User-Agent that solved it. cf_clearance is
+/// bound to the solving IP+UA, so we reuse FlareSolverr's UA and rely on the
+/// scraper sharing FlareSolverr's egress IP (both hit the origin directly).
+/// Falls back to plain api_headers() when FlareSolverr is down or yields nothing.
+fn cf_headers() {
+    let h = api_headers();
+    if !flaresolverr_is_available() { return h; }
+    try {
+        let solver = flaresolverr_get_cookies(BASE_URL, 60000);
+        let cookies = solver.cookies;
+        let ua = solver.user_agent;
+        if cookies != () && cookies.len() > 0 {
+            let cookie_str = "";
+            for c in cookies {
+                if cookie_str != "" { cookie_str += "; "; }
+                cookie_str += `${c.name}=${c.value}`;
+            }
+            h["Cookie"] = cookie_str;
+            if ua != () && ua != "" { h["User-Agent"] = ua; }
+        }
+    } catch {}
+    h
+}
+
+/// GET from the Yuzuki API. On a Cloudflare block, retry carrying a cf_clearance
+/// cookie (a cookie'd rquest GET returns the raw JSON, unlike a FlareSolverr
+/// navigation which renders a Chrome page); FlareSolverr navigation stays as a
+/// last resort for GET-able endpoints.
 fn api_get(path) {
     let url = `${API_BASE}${path}`;
     let body = http_get_with_headers(url, api_headers());
-    // Detect Cloudflare: empty body (rquest returns empty on blocked) or challenge HTML
-    if body.len() == 0 || body.contains("Just a moment") {
-        // Use FlareSolverr to fetch the URL directly
+    if is_blocked(body) {
+        body = http_get_with_headers(url, cf_headers());
+    }
+    if is_blocked(body) {
         let fs_html = flaresolverr_get(url, 60000);
-        let extracted = extract_json_from_html(fs_html);
-        body = extracted;
+        body = extract_json_from_html(fs_html);
     }
     json_parse(body)
 }
 
-/// POST JSON to Yuzuki API.
+/// POST JSON to the Yuzuki API. The search/browse endpoints are POST-only behind
+/// Cloudflare: rquest's direct POST is CF-blocked, and FlareSolverr can only
+/// *navigate* (GET) so it returns a Chrome error page for a POST route — the ONLY
+/// path that yields the JSON is a cookie'd rquest POST. So on a block we solve CF
+/// for the clearance cookie and repeat the POST carrying it + FlareSolverr's UA.
 fn api_post(path, json_body) {
     let url = `${API_BASE}${path}`;
     let body = http_post_json_with_headers(url, json_body, api_headers());
-    // Detect Cloudflare: empty body or challenge HTML
-    if body.len() == 0 || body.contains("Just a moment") {
-        // FlareSolverr only supports GET, but most API data is accessible via GET too
-        let fs_html = flaresolverr_get(url, 60000);
-        body = extract_json_from_html(fs_html);
+    if is_blocked(body) {
+        body = http_post_json_with_headers(url, json_body, cf_headers());
     }
     json_parse(body)
 }
