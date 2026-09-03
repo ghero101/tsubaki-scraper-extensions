@@ -25,8 +25,21 @@ SOURCES_DIR="$SCRIPT_DIR/sources"
 DIST_DIR="$SCRIPT_DIR/dist"
 INDEX_FILE="$SCRIPT_DIR/index.json"
 
-# GitHub raw URL base for download URLs
-GITHUB_RAW_BASE="https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master"
+# GitHub raw URL base for download URLs.
+#
+# Derived from the checkout's own git remote rather than hardcoded, so this
+# script is byte-identical across all four extension repos and cannot drift out
+# of sync with the repo it is sitting in (a copy-pasted build.sh with the wrong
+# slug silently publishes an index.json whose download URLs 404).
+REPO_SLUG="$(git -C "$SCRIPT_DIR" remote get-url origin 2>/dev/null \
+  | sed -nE 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\1#p')"
+if [ -z "$REPO_SLUG" ]; then
+  # Fall back to the directory name under the known owner, so the script still
+  # works in a tarball export with no .git directory.
+  REPO_SLUG="ghero101/$(basename "$SCRIPT_DIR")"
+  echo "WARNING: no git remote found; assuming repo slug '$REPO_SLUG'" >&2
+fi
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/$REPO_SLUG/master"
 
 echo -e "${BLUE}==============================================================================${NC}"
 echo -e "${BLUE}                    Tsubaki Extensions Build Script                          ${NC}"

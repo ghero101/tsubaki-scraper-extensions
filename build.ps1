@@ -22,8 +22,26 @@ $SourcesDir = Join-Path $ScriptDir "sources"
 $DistDir = Join-Path $ScriptDir "dist"
 $IndexFile = Join-Path $ScriptDir "index.json"
 
-# GitHub raw URL base for download URLs
-$GitHubRawBase = "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master"
+# GitHub raw URL base for download URLs.
+#
+# Derived from the checkout's own git remote rather than hardcoded, so this
+# script is byte-identical across all four extension repos and cannot drift
+# out of sync with the repo it is sitting in (a copy-pasted build.ps1 with the
+# wrong slug silently publishes an index.json whose download URLs 404).
+$RepoSlug = $null
+try {
+    $remote = (git -C $ScriptDir remote get-url origin 2>$null)
+    if ($LASTEXITCODE -eq 0 -and $remote) {
+        if ($remote -match 'github\.com[:/]([^/]+/[^/.]+)') { $RepoSlug = $Matches[1] }
+    }
+} catch { }
+if (-not $RepoSlug) {
+    # Fall back to the directory name under the known owner. Keeps the script
+    # working in a tarball export with no .git directory.
+    $RepoSlug = "ghero101/" + (Split-Path -Leaf $ScriptDir)
+    Write-Warning "No git remote found; assuming repo slug '$RepoSlug'"
+}
+$GitHubRawBase = "https://raw.githubusercontent.com/$RepoSlug/master"
 
 # Store built extensions for index update
 $Script:BuiltExtensions = @()

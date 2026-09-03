@@ -16,7 +16,7 @@
   ./build_addon.ps1 -Source toonclash-rhai
 
 .NOTES
-  Run from the tsubaki-scraper-extensions repo root.
+  Run from an extension repo root.
 #>
 [CmdletBinding()]
 param(
