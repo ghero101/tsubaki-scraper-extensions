@@ -107,7 +107,10 @@ jobs:
           # `echo "" | wc -l` is 1, not 0 — use grep -c to count real lines so an
           # index-only run doesn't produce "Update extensions ()".)
           UPDATED=$(git diff --cached --name-only | grep -E '^dist/.*\.zip$' | sed 's|dist/||;s|/.*||' | sort -u)
-          UPDATED_COUNT=$(printf '%s' "$UPDATED" | grep -c .)
+          # `grep -c` prints 0 but EXITS 1 when nothing matches, and this step
+          # runs under `bash -e`, so an index-only run aborted the job right
+          # here (nightly failures since 2026-10). `|| true` keeps the 0.
+          UPDATED_COUNT=$(printf '%s' "$UPDATED" | grep -c . || true)
 
           if [ "$UPDATED_COUNT" -eq 0 ]; then
             COMMIT_MSG="build: sync index.json"
