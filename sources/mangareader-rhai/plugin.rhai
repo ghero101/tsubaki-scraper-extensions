@@ -1167,7 +1167,7 @@ fn get_pages_from_browser(slug, chapter_num) {
         browser_sleep(5000);
 
         // Try to extract descrambled images from canvases
-        let result = browser_execute_script(browser_id, "
+        let result = browser_execute_script(browser_id, `
             (function() {
                 var urls = [];
                 // Method 1: Extract canvas data URLs (descrambled images)
@@ -1200,7 +1200,7 @@ fn get_pages_from_browser(slug, chapter_num) {
                 }
                 return JSON.stringify(urls);
             })()
-        ");
+        `);
 
         try { browser_close(browser_id); } catch {}
 

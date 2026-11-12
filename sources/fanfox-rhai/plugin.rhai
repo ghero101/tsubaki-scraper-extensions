@@ -743,11 +743,13 @@ fn get_chapters(series_id, auth) {
 
     // FanFox chapter list: links matching /manga/{slug}/c{number}/
     // Try structured selector first
-    let chapter_links = html_select(html, "a[href*='/c']");
-
-    // Also try the chapter list container
+    // The chapter list proper first: its links carry the chapter title
+    // (p.title3) and release date (p.title2). The page-wide a[href*='/c']
+    // also matches the "Read Now" button, which used to win the dedupe and
+    // name chapter 1 "Read Now".
+    let chapter_links = html_select(html, "ul.detail-main-list li a");
     if chapter_links.len() == 0 {
-        chapter_links = html_select(html, "ul.detail-main-list a");
+        chapter_links = html_select(html, "a[href*='/c']");
     }
     if chapter_links.len() == 0 {
         chapter_links = html_select(html, "div#chapterlist a");
@@ -790,16 +792,21 @@ fn get_chapters(series_id, auth) {
         // Get volume if present
         let volume = extract_volume_number(href);
 
-        // Get chapter title from link text
-        let chapter_title = element_text(link).trim();
+        // Get chapter title from link text ("Ch.011 - Title" in p.title3)
+        let chapter_title = "";
+        let t3 = html_select(link, "p.title3");
+        if t3.len() > 0 { chapter_title = element_text(t3[0]).trim(); }
+        if chapter_title == "" { chapter_title = element_text(link).trim(); }
         if chapter_title == "" {
             chapter_title = `Chapter ${chapter_num}`;
         }
         // Clean up title (remove "New" badges etc.)
         chapter_title = chapter_title.replace("new", "").replace("New", "").replace("NEW", "").trim();
 
-        // Try to find date from parent or sibling
+        // Release date: "Nov 03,2026" or "44 minute ago" (host parses both)
         let published_at = ();
+        let t2 = html_select(link, "p.title2");
+        if t2.len() > 0 { published_at = element_text(t2[0]).trim(); }
 
         let chapter_url = make_absolute(href);
 
@@ -881,7 +888,7 @@ fn get_chapter_pages(chapter_id, auth) {
     let pages = [];
     let idx = 0;
 
-    if mobile_html != "" && !mobile_html.contains("404") && !mobile_html.contains("Page not found") {
+    if mobile_html != "" && !mobile_html.contains("Page not found") {
         // Mobile roll view has all images as <img> tags with data-original or src
         let img_els = html_select(mobile_html, "img");
 
@@ -928,7 +935,7 @@ fn get_chapter_pages(chapter_id, auth) {
     let desktop_url = `${BASE_URL}/manga/${slug}/c${chapter_num}/1.html`;
     let desktop_html = fetch_html(desktop_url);
 
-    if desktop_html == "" || desktop_html.contains("404") || desktop_html.contains("Page not found") {
+    if desktop_html == "" || desktop_html.contains("Page not found") {
         // Try with volume TBD path
         desktop_url = `${BASE_URL}/manga/${slug}/vTBD/c${chapter_num}/1.html`;
         desktop_html = fetch_html(desktop_url);

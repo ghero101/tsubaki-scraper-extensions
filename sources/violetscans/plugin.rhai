@@ -7,7 +7,7 @@
 //   JSON: json_parse(text)
 //   Utility: url_encode(text), regex_match(pattern, text), regex_find(pattern, text)
 
-const BASE_URL = "https://violetscans.org";
+const BASE_URL = "https://violetmanga.com";
 
 fn get_headers() {
     #{
@@ -330,7 +330,7 @@ fn get_chapters(series_id, auth) {
 // and populates it client-side from an inline:
 //   <script>ts_reader.run({ ..., "sources":[{"source":"...","images":["https:\/\/...\/01.webp", ...]}], ... });</script>
 // Image URLs are JSON-escaped (\/ for /) and live under
-//   https://violetscans.org/wp-content/uploads/manga/<hash>/NN.webp|jpg|jpeg|png
+//   https://violetmanga.com/wp-content/uploads/manga/<hash>/NN.webp|jpg|jpeg|png
 //
 // Older versions tried a two-stage regex around the whole "images":[...] array,
 // which was brittle. We now scan for the escaped image URLs directly.

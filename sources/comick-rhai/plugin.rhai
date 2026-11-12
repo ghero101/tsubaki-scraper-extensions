@@ -306,21 +306,26 @@ fn browse(page, category, auth) {
 
 /// Get latest chapter updates (page-based pagination).
 fn get_latest_updates(page, auth) {
-    let url = `${BASE_URL}/api/chapters/latest?order=new&page=${page}`;
-
-    let data = ();
-    try {
-        data = api_get_json(url);
-    } catch(err) {
-        return #{ series: [], has_more: false };
-    }
-
-    // Response: {data: [{id, slug, title, default_thumbnail, ...}]}
+    // order=new lists chapters, not series: one bulk upload can fill all 100
+    // slots with the same title (seen 2026-11: 100 rows, 1 series). Pull the
+    // "hot" listing too so a page always has a spread of series.
     let items = [];
-    if type_of(data) == "array" {
-        items = data;
-    } else if data["data"] != () && type_of(data["data"]) == "array" {
-        items = data["data"];
+    let any_ok = false;
+    for order in ["new", "hot"] {
+        let data = ();
+        try {
+            data = api_get_json(`${BASE_URL}/api/chapters/latest?order=${order}&page=${page}`);
+            any_ok = true;
+        } catch { continue; }
+        // Response: {data: [{id, slug, title, default_thumbnail, ...}]}
+        if type_of(data) == "array" {
+            items += data;
+        } else if type_of(data) == "map" && data["data"] != () && type_of(data["data"]) == "array" {
+            items += data["data"];
+        }
+    }
+    if !any_ok {
+        return #{ series: [], has_more: false };
     }
 
     let series = [];
@@ -570,6 +575,29 @@ fn get_series(id_or_url, auth) {
 
     let hid = if comic["hid"] != () { comic["hid"] } else { "" };
 
+    // MangaUpdates categories ComicK mirrors ("Level System", "Weak to
+    // Strong", ...) are the richest tag set the page has.
+    let tags = [];
+    let mu = comic["mu_comics"];
+    if mu != () && type_of(mu) == "map" && type_of(mu["mu_comic_categories"]) == "array" {
+        for c in mu["mu_comic_categories"] {
+            if type_of(c) != "map" || type_of(c["mu_categories"]) != "map" { continue; }
+            let t = c["mu_categories"]["title"];
+            let neg = c["negative_vote"];
+            let pos = c["positive_vote"];
+            if neg != () && pos != () && neg > pos { continue; }
+            if t != () && t != "" && !tags.contains(t) { tags.push(t); }
+        }
+    }
+    let publishers = [];
+    if mu != () && type_of(mu) == "map" && type_of(mu["mu_comic_publishers"]) == "array" {
+        for p in mu["mu_comic_publishers"] {
+            if type_of(p) == "map" && type_of(p["mu_publishers"]) == "map" && p["mu_publishers"]["title"] != () {
+                publishers.push(p["mu_publishers"]["title"]);
+            }
+        }
+    }
+
     return #{
         id: slug,
         title: title,
@@ -580,11 +608,20 @@ fn get_series(id_or_url, auth) {
         artists: artists,
         status: status,
         genres: genres,
-        tags: [],
+        tags: tags,
         year: year,
         content_rating: content_rating,
+        chapter_count: comic["last_chapter"],
         url: `${BASE_URL}/comic/${slug}`,
-        extra: #{ hid: hid }
+        extra: #{
+            hid: hid,
+            country: comic["country"],
+            score: comic["bayesian_rating"],
+            rating_count: comic["rating_count"],
+            follow_count: comic["user_follow_count"],
+            last_chapter: comic["last_chapter"],
+            publishers: publishers
+        }
     };
 }
 

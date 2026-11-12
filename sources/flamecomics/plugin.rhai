@@ -250,12 +250,12 @@ fn get_chapters(series_id, auth) {
             id: `${ch_series_id}:${token}`,  // Compound ID: series_id:token
             series_id: `${ch_series_id}`,
             number: chapter_num,
-            title: title,
+            title: if title == "" { () } else { title },
             volume: (),
             language: "en",
             scanlator: "Flame Comics",
             url: `${BASE_URL}/series/${ch_series_id}/${token}`,
-            published_at: (),
+            published_at: ch["release_date"],
             page_count: (),
             extra: #{
                 chapter_id: `${chapter_id}`,  // Store original chapter_id in extra

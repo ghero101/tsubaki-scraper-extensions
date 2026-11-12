@@ -338,15 +338,52 @@ fn get_chapters(series_id, auth) {
     }
 
     let html = fetch_html(url);
-    let doc = html_parse(html);
 
     let chapters = [];
     let seen = #{};
 
+    // Current Madara builds load the chapter list by POSTing to
+    // <series-url>/ajax/chapters/; the series page itself only has the
+    // "Read First / Read Last" buttons, so scraping it gave 0 chapters.
+    if html_select(html, "li.wp-manga-chapter").len() == 0 {
+        let ajax_url = if url.ends_with("/") { `${url}ajax/chapters/` } else { `${url}/ajax/chapters/` };
+        try {
+            let ajax_html = http_post_form(ajax_url, "");
+            if ajax_html != () && ajax_html.contains("wp-manga-chapter") { html = ajax_html; }
+        } catch {}
+    }
+    if html_select(html, "li.wp-manga-chapter").len() == 0 {
+        // Older builds: admin-ajax with the post id from the bookmark button.
+        let pid = regex_find("data-post=\"\\d+\"", html);
+        if pid != "" {
+            try {
+                let ajax_html = http_post_form(`${BASE_URL}/wp-admin/admin-ajax.php`, `action=manga_get_chapters&manga=${regex_find("\\d+", pid)}`);
+                if ajax_html != () && ajax_html.contains("wp-manga-chapter") { html = ajax_html; }
+            } catch {}
+        }
+    }
+
     // Find chapter links (Madara theme uses .wp-manga-chapter class)
-    let chapter_links = html_select(html, ".wp-manga-chapter a, .listing-chapters_wrap li a, ul.main li a");
+    let chapter_links = html_select(html, ".wp-manga-chapter > a, .listing-chapters_wrap li a, ul.main li a");
+
+    // Release dates, one per li.wp-manga-chapter (same order as the links
+    // above): plain text ("March 3, 2025") or a "3 hours ago" title on the
+    // "new" badge. The host parses either form.
+    let dates = [];
+    for li in html_select(html, "li.wp-manga-chapter") {
+        let d = ();
+        let badge = html_select(li, ".chapter-release-date a[title]");
+        if badge.len() > 0 { d = element_attr(badge[0], "title"); }
+        if d == () || d == "" {
+            let t = html_select(li, ".chapter-release-date i");
+            if t.len() > 0 { d = element_text(t[0]).trim(); }
+        }
+        dates.push(d);
+    }
+    let link_idx = -1;
 
     for link in chapter_links {
+        link_idx += 1;
         let href = element_attr(link, "href");
         if href == () || href == "" {
             continue;
@@ -361,10 +398,12 @@ fn get_chapters(series_id, auth) {
         let chapter_num = extract_chapter_number(href);
 
         // Skip duplicates
-        if seen.contains(chapter_num) {
+        // Dedupe on the link, not the number: multi-season series reuse
+        // numbers ("Winter Season - Chapter 1" / "Spring Season - Chapter 1").
+        if seen.contains(href) {
             continue;
         }
-        seen[chapter_num] = true;
+        seen[href] = true;
 
         // Get chapter title
         let chapter_title = element_text(link).trim();
@@ -388,7 +427,7 @@ fn get_chapters(series_id, auth) {
             language: "en",
             scanlator: (),
             url: chapter_url,
-            published_at: (),
+            published_at: if link_idx < dates.len() { dates[link_idx] } else { () },
             page_count: (),
             extra: #{}
         });
@@ -427,6 +466,7 @@ fn get_chapter_pages(chapter_id, auth) {
             img_url = element_attr(img, "data-lazy-src");
         }
 
+        if img_url != () { img_url = img_url.trim(); }
         if img_url != () && img_url != "" {
             // Skip non-page images (logos, ads, etc.)
             if img_url.contains("logo") || img_url.contains("banner") || img_url.contains("advertisement") {

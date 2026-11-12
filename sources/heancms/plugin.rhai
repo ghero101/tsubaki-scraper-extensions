@@ -490,7 +490,9 @@ fn get_chapters_new_endpoint(slug, auth) {
     if items != () {
         for ch in items {
             let chapter = parse_chapter_dto(ch, slug);
-            if chapter != () {
+            // Skip paywalled chapters: they return no images until they turn
+            // free, so listing them only queues empty downloads.
+            if chapter != () && chapter.extra.is_free {
                 chapters.push(chapter);
             }
         }
@@ -546,7 +548,9 @@ fn parse_seasons_chapters(series_data, slug) {
 
         for ch in season_chapters {
             let chapter = parse_chapter_dto(ch, slug);
-            if chapter != () {
+            // Skip paywalled chapters: they return no images until they turn
+            // free, so listing them only queues empty downloads.
+            if chapter != () && chapter.extra.is_free {
                 chapters.push(chapter);
             }
         }
