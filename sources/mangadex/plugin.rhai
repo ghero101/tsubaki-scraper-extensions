@@ -45,6 +45,15 @@ fn auth_http_get(url, auth) {
     http_get_plain(url, get_auth_headers(auth))
 }
 
+/// Error for a MangaDex response that isn't JSON: an empty body, a rate-limit
+/// page, or the mangadex.org/edge/challenge bot check. Reading `.result` off
+/// the `()` that json_parse returns used to fail with "Unknown property
+/// 'result' - a getter is not registered for type '()'", which hid the cause.
+fn non_json_error(response_text) {
+    let snippet = if response_text.len() > 0 { response_text.sub_string(0, 160) } else { "(empty body)" };
+    `MangaDex returned a non-JSON response (rate limit or bot challenge?): ${snippet}`
+}
+
 /// Perform OAuth 2.0 login to MangaDex.
 /// MangaDex uses Keycloak with password grant type.
 /// Required credentials: username, password, client_id, client_secret
@@ -78,6 +87,9 @@ fn login(credentials) {
     // Make OAuth token request (http_post_form sets Content-Type automatically)
     let response_text = http_post_form(auth_url, body);
     let response = json_parse(response_text);
+    if type_of(response) != "map" {
+        return #{ success: false, error: non_json_error(response_text) };
+    }
 
     // Check for error response
     if response.error != () {
@@ -378,6 +390,7 @@ fn search_series(query, page, auth) {
 
     let response_text = auth_http_get(url, auth);
     let response = json_parse(response_text);
+    if type_of(response) != "map" { throw non_json_error(response_text); }
 
     if response.result != "ok" {
         return #{ series: [], has_more: false, total: 0 };
@@ -413,6 +426,7 @@ fn get_series_details(id_or_url, auth) {
 
     let response_text = auth_http_get(url, auth);
     let response = json_parse(response_text);
+    if type_of(response) != "map" { throw non_json_error(response_text); }
 
     if response.result != "ok" {
         throw `Failed to fetch manga with ID: ${id}`;
@@ -528,6 +542,7 @@ fn get_chapter_pages(chapter_id, auth) {
 
     let response_text = auth_http_get(url, auth);
     let response = json_parse(response_text);
+    if type_of(response) != "map" { throw non_json_error(response_text); }
 
     if response == () || response.result != "ok" {
         return [];
@@ -591,6 +606,7 @@ fn get_latest_updates(page, auth) {
 
     let response_text = auth_http_get(url, auth);
     let response = json_parse(response_text);
+    if type_of(response) != "map" { throw non_json_error(response_text); }
 
     if response.result != "ok" {
         return #{ series: [], has_more: false };
@@ -615,6 +631,7 @@ fn get_popular(page, auth) {
 
     let response_text = auth_http_get(url, auth);
     let response = json_parse(response_text);
+    if type_of(response) != "map" { throw non_json_error(response_text); }
 
     if response.result != "ok" {
         return [];
