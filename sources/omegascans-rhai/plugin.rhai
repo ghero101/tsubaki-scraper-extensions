@@ -297,9 +297,19 @@ fn get_chapters(series_id, auth) {
             let ch_created = if ch["created_at"] != () { ch["created_at"] } else { () };
             let ch_price = if ch["price"] != () { ch["price"] } else { 0 };
 
-            // Extract chapter number from index (e.g., 7.0 -> "7")
-            // The API returns index as a number, so convert to string first
+            // Paid (early-access) chapters return no images until free_at,
+            // so listing them only produces empty downloads. They show up
+            // here again once they turn free.
+            if ch_price != () && ch_price > 0 {
+                continue;
+            }
+
+            // The list endpoint stopped sending `index`; fall back to the
+            // number in the slug ("chapter-12-5" -> 12.5) or name.
             let number = `${ch_index}`;
+            if number == "" {
+                number = chapter_number_from(ch_slug, ch_name);
+            }
             if number.ends_with(".0") {
                 number = number.sub_string(0, number.len() - 2);
             }
@@ -352,6 +362,16 @@ fn get_chapters(series_id, auth) {
     });
 
     chapters
+}
+
+/// Pull a chapter number out of "chapter-12-5" / "Chapter 12.5".
+fn chapter_number_from(slug, name) {
+    let m = regex_find("(?i)chapter[-_ ]?\\d+([-_.]\\d+)?", `${slug}`);
+    if m == "" { m = regex_find("(?i)chapter[-_ ]?\\d+([-_.]\\d+)?", `${name}`); }
+    if m == "" { m = regex_find("\\d+(\\.\\d+)?", `${name}`); }
+    if m == "" { return "0"; }
+    let digits = regex_find("\\d+([-_.]\\d+)?", m);
+    digits.replace("-", ".").replace("_", ".")
 }
 
 /// Get page image URLs for a chapter

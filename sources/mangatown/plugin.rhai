@@ -412,11 +412,25 @@ fn get_chapters(series_id, auth) {
     let seen = #{};
 
     let chapter_links = html_select(html, "ul.chapter_list li a");
+    // Release dates, one per li (same order as the links): "Nov 01,2026",
+    // or "Today Nov 12,2026" for fresh chapters.
+    let dates = [];
+    for li in html_select(html, "ul.chapter_list li") {
+        let t = html_select(li, "span.time");
+        let d = ();
+        if t.len() > 0 {
+            d = element_text(t[0]).trim().replace("Today ", "").replace("Yesterday ", "").trim();
+        }
+        dates.push(d);
+    }
     if chapter_links.len() == 0 {
         chapter_links = html_select(html, "a[href*='/manga/'][href*='/c']");
+        dates = [];
     }
+    let link_idx = -1;
 
     for link in chapter_links {
+        link_idx += 1;
         let href = element_attr(link, "href");
         if href == () || href == "" {
             continue;
@@ -445,7 +459,7 @@ fn get_chapters(series_id, auth) {
             language: "en",
             scanlator: (),
             url: chapter_url,
-            published_at: (),
+            published_at: if link_idx < dates.len() { dates[link_idx] } else { () },
             page_count: (),
             extra: #{}
         });

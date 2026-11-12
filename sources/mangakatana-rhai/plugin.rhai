@@ -525,11 +525,13 @@ fn get_chapters(series_id, auth) {
             ch_title = `Chapter ${ch_num}`;
         }
 
-        // Date from second td
+        // Date ("Nov-12-2026") from div.update_time. Selecting "td" inside a
+        // row never matched (the row is re-parsed as a fragment and the HTML
+        // parser drops <td> outside a table), so dates were always blank.
         let date = "";
-        let tds = element_select(row, "td");
-        if tds.len() >= 2 {
-            date = element_text(tds[1]).trim();
+        let dt = element_select(row, ".update_time");
+        if dt.len() > 0 {
+            date = element_text(dt[0]).trim();
         }
 
         // Compound chapter ID: slug_id|c{number}

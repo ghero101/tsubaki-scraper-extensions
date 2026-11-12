@@ -22,24 +22,27 @@ fn get_token_from_auth(auth) {
     return "";
 }
 
-/// Get auth headers for a request.
+/// Get headers for an API request.
+///
+/// MangaDex sends anything with a browser User-Agent to a JS challenge page
+/// (api.mangadex.org -> mangadex.org/edge/challenge), and its API rules ask
+/// clients to identify themselves rather than spoof a browser. So every call
+/// goes through the plain client with an honest User-Agent.
 fn get_auth_headers(auth) {
+    let headers = #{
+        "User-Agent": "Tsubaki/1.0 (+https://github.com/ghero101/Tsubaki)",
+        "Accept": "application/json"
+    };
     let token = get_token_from_auth(auth);
     if token != "" {
-        return #{
-            "Authorization": `Bearer ${token}`
-        };
+        headers["Authorization"] = `Bearer ${token}`;
     }
-    return #{};
+    headers
 }
 
-/// Make an authenticated GET request.
+/// Make an (optionally authenticated) GET request.
 fn auth_http_get(url, auth) {
-    let headers = get_auth_headers(auth);
-    if headers.len() > 0 {
-        return http_get_with_headers(url, headers);
-    }
-    return http_get(url);
+    http_get_plain(url, get_auth_headers(auth))
 }
 
 /// Perform OAuth 2.0 login to MangaDex.
@@ -247,6 +250,23 @@ fn build_content_rating_params() {
     return params;
 }
 
+/// Tracker IDs from MangaDex's `links` map (al = AniList, mal = MyAnimeList,
+/// mu = MangaUpdates, kt = Kitsu). The backend copies these onto the series
+/// at import so metadata sync can link it without a title search.
+fn extract_external_ids(id, links) {
+    let ids = #{ mangadex: id };
+    if links == () { return ids; }
+    if links.al != () { ids.anilist = links.al; }
+    if links.mal != () { ids.mal = links.mal; }
+    if links.mu != () {
+        let mu = mangaupdates_id(links.mu);
+        if mu.id != () { ids.mangaupdates = mu.id; }
+        if mu.legacy != () { ids.mangaupdates_legacy = mu.legacy; }
+    }
+    if links.kt != () { ids.kitsu = links.kt; }
+    ids
+}
+
 /// Builds a series object from MangaDex manga data.
 fn build_series_result(manga, preferred_lang) {
     let id = manga.id;
@@ -308,6 +328,10 @@ fn build_series_result(manga, preferred_lang) {
         content_rating: map_content_rating(attrs.contentRating),
         url: `https://mangadex.org/title/${id}`,
         extra: #{
+            provider: "mangadex",
+            provider_id: id,
+            external_ids: extract_external_ids(id, attrs.links),
+            links: attrs.links,
             original_language: attrs.originalLanguage,
             last_chapter: attrs.lastChapter,
             last_volume: attrs.lastVolume,
@@ -462,11 +486,20 @@ fn get_chapters(series_id, auth) {
                 }
             }
 
+            // Oneshots and some extras have no chapter number. A null here
+            // used to fail the host's conversion and drop the WHOLE list.
+            let number = attrs.chapter;
+            let title = attrs.title;
+            if number == () || `${number}`.trim() == "" {
+                number = "0";
+                if title == () || title == "" { title = "Oneshot"; }
+            }
+
             chapters.push(#{
                 id: chapter_data.id,
                 series_id: series_id,
-                number: attrs.chapter,
-                title: attrs.title,
+                number: number,
+                title: title,
                 volume: attrs.volume,
                 language: attrs.translatedLanguage,
                 scanlator: scanlator,
@@ -593,4 +626,21 @@ fn get_popular(page, auth) {
     }
 
     return series;
+}
+// MangaUpdates ids: current pages use a base36 slug ("pb8uwds") that encodes
+// the numeric API id (55099564912); old "series.html?id=33" ids are a separate
+// legacy numbering the v1 API doesn't accept. Returns #{ id } for a slug, or
+// #{ legacy } for an all-digit legacy id.
+fn mangaupdates_id(raw) {
+    let s = `${raw}`.trim().to_lower();
+    if s == "" { return #{}; }
+    let all_digits = true;
+    for c in s.chars() { if c < '0' || c > '9' { all_digits = false; break; } }
+    if all_digits { return #{ legacy: s }; }
+    let n = 0;
+    for c in s.chars() {
+        let v = if c >= '0' && c <= '9' { c.to_int() - 48 } else if c >= 'a' && c <= 'z' { c.to_int() - 87 } else { return #{}; };
+        n = n * 36 + v;
+    }
+    #{ id: `${n}` }
 }

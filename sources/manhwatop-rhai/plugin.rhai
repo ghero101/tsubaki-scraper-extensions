@@ -757,12 +757,25 @@ fn get_chapters(series_id, auth) {
 
     let html = fetch_html(url);
 
+    let chapters = [];
+    let seen = #{};
+
+    // Current Madara builds serve the list from POST <series-url>/ajax/chapters/
+    // (the admin-ajax action below is the older route). Try it first.
+    try {
+        let ajax_url = if url.ends_with("/") { `${url}ajax/chapters/` } else { `${url}/ajax/chapters/` };
+        let ajax_html = http_post_form(ajax_url, "");
+        if ajax_html != () && ajax_html.contains("wp-manga-chapter") {
+            let ajax_chapters = parse_chapter_list(ajax_html, series_id, seen);
+            if ajax_chapters.len() > 0 {
+                return ajax_chapters;
+            }
+        }
+    } catch {}
+
     if html == "" {
         return [];
     }
-
-    let chapters = [];
-    let seen = #{};
 
     let post_id = "";
     let id_match = regex_find("data-id=\"(\\d+)\"", html);
