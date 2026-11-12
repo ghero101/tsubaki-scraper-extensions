@@ -318,6 +318,43 @@ fn get_series(id_or_url, auth) {
         }
     }
 
+    // Detail list rows: "Released: 2018", "Type: Manga", "Adult Content: No",
+    // and the "Track:" row linking AniList / MangaUpdates / MAL pages.
+    let year = ();
+    let format = ();
+    let content_rating = "safe";
+    for li in html_select(html, "li") {
+        let strong = html_select(li, "strong");
+        if strong.len() == 0 { continue; }
+        let label = element_text(strong[0]).trim().to_lower();
+        if label.starts_with("released") {
+            let y = regex_find("\\d{4}", element_text(li));
+            if y != "" { year = parse_int(y); }
+        } else if label.starts_with("type") {
+            let a = html_select(li, "a");
+            if a.len() > 0 { format = element_text(a[0]).trim(); }
+        } else if label.starts_with("adult content") {
+            if element_text(li).to_lower().contains("yes") { content_rating = "adult"; }
+        }
+    }
+
+    let external_ids = #{};
+    for a in html_select(html, "a[href]") {
+        let href = element_attr(a, "href");
+        if href == () { continue; }
+        if href.contains("anilist.co/manga/") {
+            external_ids.anilist = href.split("anilist.co/manga/")[1].split("/")[0];
+        } else if href.contains("myanimelist.net/manga/") {
+            external_ids.mal = href.split("myanimelist.net/manga/")[1].split("/")[0];
+        } else if href.contains("mangaupdates.com/series/") {
+            let mu = mangaupdates_id(href.split("mangaupdates.com/series/")[1].split("/")[0]);
+            if mu.id != () { external_ids.mangaupdates = mu.id; }
+            if mu.legacy != () { external_ids.mangaupdates_legacy = mu.legacy; }
+        } else if href.contains("kitsu.app/manga/") || href.contains("kitsu.io/manga/") {
+            external_ids.kitsu = href.split("/manga/")[1].split("/")[0];
+        }
+    }
+
     #{
         id: id,
         title: title,
@@ -329,12 +366,14 @@ fn get_series(id_or_url, auth) {
         status: status,
         genres: genres,
         tags: [],
-        year: (),
-        content_rating: "suggestive",
+        year: year,
+        content_rating: content_rating,
         url: url,
         extra: #{
             auto_match_metadata: true,
-            source_name: "WeebCentral"
+            source_name: "WeebCentral",
+            format: format,
+            external_ids: external_ids
         }
     }
 }
@@ -683,4 +722,22 @@ fn get_popular(page, auth) {
 fn browse(page, filters, auth) {
     // Default to latest updates for browse
     get_latest_updates(page, auth)
+}
+
+// MangaUpdates ids: current pages use a base36 slug ("pb8uwds") that encodes
+// the numeric API id (55099564912); old "series.html?id=33" ids are a separate
+// legacy numbering the v1 API doesn't accept. Returns #{ id } for a slug, or
+// #{ legacy } for an all-digit legacy id.
+fn mangaupdates_id(raw) {
+    let s = `${raw}`.trim().to_lower();
+    if s == "" { return #{}; }
+    let all_digits = true;
+    for c in s.chars() { if c < '0' || c > '9' { all_digits = false; break; } }
+    if all_digits { return #{ legacy: s }; }
+    let n = 0;
+    for c in s.chars() {
+        let v = if c >= '0' && c <= '9' { c.to_int() - 48 } else if c >= 'a' && c <= 'z' { c.to_int() - 87 } else { return #{}; };
+        n = n * 36 + v;
+    }
+    #{ id: `${n}` }
 }

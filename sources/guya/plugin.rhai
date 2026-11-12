@@ -351,7 +351,7 @@ fn get_chapters(series_id, auth) {
             let group_keys = ch_groups.keys();
             if group_keys.len() > 0 {
                 let pages = ch_groups[group_keys[0]];
-                if pages.is_array() {
+                if type_of(pages) == "array" {
                     page_count = pages.len();
                 }
             }

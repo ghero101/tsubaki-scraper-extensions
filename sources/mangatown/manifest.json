@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "mangatown",
   "name": "MangaTown",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Scraper for MangaTown (mangatown.com), a long-running manga aggregator with a large library of manga, manhwa, and manhua titles.",
   "author": {
     "name": "Tsubaki Community",

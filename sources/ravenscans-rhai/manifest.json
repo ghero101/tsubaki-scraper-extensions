@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "ravenscans",
   "name": "Raven Scans",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Raven Scans - Manga and manhwa scanlation group",
   "author": {
     "name": "Tsubaki Team",
@@ -25,7 +25,7 @@
     ],
     "requires_cookies": false,
     "requires_javascript": false,
-    "cloudflare_protected": false
+    "cloudflare_protected": true
   },
   "features": {
     "search": true,
@@ -40,7 +40,7 @@
     "type": "none"
   },
   "source_info": {
-    "base_url": "https://ravenscans.net",
+    "base_url": "https://ravenscans.org",
     "language": "en",
     "supported_languages": [
       "en"

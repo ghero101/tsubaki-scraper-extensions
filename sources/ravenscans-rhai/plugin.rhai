@@ -33,7 +33,7 @@
 //          regex_find_all(pattern, text)
 //   url_encode(text) -> string
 
-const BASE_URL = "https://ravenscans.net";
+const BASE_URL = "https://ravenscans.org";
 
 // ============================================================================
 // Helper Functions
@@ -137,7 +137,7 @@ fn extract_slug(url) {
     let parts = url.split("/");
     let last_non_empty = "";
     for part in parts {
-        if part != "" && !part.contains("?") && !part.contains(".") && part != "http:" && part != "https:" && part != "ravenscans.net" && part != "series" {
+        if part != "" && !part.contains("?") && !part.contains(".") && part != "http:" && part != "https:" && part != "ravenscans.net" && part != "ravenscans.org" && part != "series" {
             last_non_empty = part;
         }
     }

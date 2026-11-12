@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "heancms",
   "name": "HeanCMS",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "description": "Framework parser for HeanCMS-based manga sites (OmegaScans, ReaperScans, QuantumScans, etc.). Configure the base URL in settings to use with your preferred HeanCMS site.",
   "author": {
     "name": "Tsubaki Community",
