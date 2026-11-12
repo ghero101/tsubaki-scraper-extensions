@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "roliascan",
   "name": "RoliaScan",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "description": "Scraper for RoliaScan manga scanlation site.",
   "author": {
     "name": "Tsubaki Community",
@@ -20,13 +20,13 @@
   "capabilities": {
     "level": "http_only",
     "allowed_domains": [
+      "roliascan.com",
+      "www.roliascan.com",
       "roliascann.com",
       "www.roliascann.com",
-      "roliascan.com",
-      "cdn2.fandommanga.xyz",
+      "roliascan.org",
+      "mangataro.yachts",
       "fandommanga.xyz",
-      "cdn1.love4awalk.xyz",
-      "cdn2.love4awalk.xyz",
       "love4awalk.xyz"
     ],
     "requires_cookies": false,

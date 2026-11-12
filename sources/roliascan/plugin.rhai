@@ -25,23 +25,6 @@ fn fetch_html(url) {
     }
 }
 
-// Render JS before returning HTML. RoliaScan's /search results are injected
-// client-side by Ajax Search Pro, so the static page has no real matches —
-// FlareSolverr executes the JS so the result anchors exist in the DOM.
-fn fetch_rendered(url) {
-    if flaresolverr_is_available() {
-        try {
-            let html = flaresolverr_get(url, 45000);
-            if html != "" && html.len() > 500 {
-                return html;
-            }
-        } catch {
-            // fall through to static fetch
-        }
-    }
-    return fetch_html(url);
-}
-
 fn get_source_info() {
     #{
         id: "roliascan-rhai",
@@ -53,86 +36,97 @@ fn get_source_info() {
     }
 }
 
-fn search_series(query, page, auth) {
-    let encoded = url_encode(query);
-    // Search is the WordPress searchForm's GET target /search?keyword=. The
-    // results are rendered client-side by Ajax Search Pro (the old /filter?keyword=
-    // endpoint never filtered — it returned the default grid), so fetch with JS
-    // rendering. It's a single result page; ignore `page`.
-    let url = `${BASE_URL}/search?keyword=${encoded}`;
-
-    let html = fetch_rendered(url);
-    let doc = html_parse(html);
-    let series = [];
-
-    // Search for manga links
-    let items = html_select(doc, "a[href*='/manga/']");
-    let seen = #{};
-
-    for item in items {
-        let href = element_attr(item, "href");
-        if href == () || href == "" { continue; }
-        if seen.contains(href) { continue; }
-        if href.contains("/chapter") { continue; }
-
-        seen[href] = true;
-
-        // Get cover image first (we need it to extract alt text for title)
-        let cover = ();
-        let img_alt = "";
-        let imgs = html_select(item, "img");
-        if imgs.len() > 0 {
-            cover = element_attr(imgs[0], "src");
-            if cover == () || cover == "" {
-                cover = element_attr(imgs[0], "data-src");
-            }
-            // Get alt text as fallback for title
-            img_alt = element_attr(imgs[0], "alt");
-            if img_alt == () { img_alt = ""; }
-        }
-
-        let title = "";
-        let title_els = html_select(item, "h3, h4, .title, .tt");
-        if title_els.len() > 0 {
-            title = element_text(title_els[0]).trim();
-        }
-        if title == "" {
-            title = element_text(item).trim();
-            if title.len() > 100 { title = ""; }
-        }
-        if title == "" && img_alt != "" {
-            // Extract title from img alt attribute (format: "Title manga cover")
-            title = img_alt;
-            if title.ends_with(" manga cover") {
-                title = title.sub_string(0, title.len() - 12);
-            }
-            title = title.trim();
-        }
-
-        if title != "" {
-            series.push(#{
-                id: href,
-                title: title,
-                url: href,
-                cover_url: cover,
-                alternate_titles: [],
-                authors: [],
-                status: (),
-                genres: []
-            });
-        }
+// The /browse/ grid and its search box both call this JSON endpoint
+// (mangalist.js): POST {page, search, sort, ...filters} -> array of
+// {id, title, url, cover, status, type, year, description}. 24 per page,
+// an empty array past the last page. No JS rendering or auth needed.
+fn load_catalog(page, search, sort) {
+    let p = if page == () || page < 1 { 1 } else { page };
+    let body = json_stringify(#{
+        page: p,
+        search: search,
+        years: "[]",
+        genres: "[]",
+        types: "[]",
+        statuses: "[]",
+        sort: sort,
+        genreMatchMode: "any"
+    });
+    let headers = get_headers();
+    headers["Accept"] = "application/json";
+    headers["Content-Type"] = "application/json";
+    let raw = "";
+    try {
+        raw = http_post_json_with_headers(`${BASE_URL}/wp-json/manga/v1/load`, body, headers);
+    } catch {
+        return [];
     }
+    let data = json_parse(raw);
+    if type_of(data) != "array" { return []; }
 
-    // Ajax Search Pro returns a single result set (no pagination), so don't
-    // signal more pages — `page` is ignored above and page 2 would just repeat.
-    #{ series: series, has_more: false, total: series.len() }
+    let series = [];
+    for item in data {
+        let url = item["url"];
+        let title = item["title"];
+        if url == () || url == "" || title == () || title == "" { continue; }
+        let status = ();
+        let s = item["status"];
+        if s != () {
+            let sl = s.to_lower();
+            if sl.contains("ongoing") { status = "Ongoing"; }
+            else if sl.contains("completed") { status = "Completed"; }
+            else if sl.contains("hiatus") { status = "Hiatus"; }
+            else if sl.contains("cancel") || sl.contains("dropped") { status = "Cancelled"; }
+        }
+        let year = ();
+        if item["year"] != () && item["year"] != "" { year = parse_int(`${item["year"]}`); }
+        series.push(#{
+            id: url,
+            title: html_unescape(title),
+            url: url,
+            cover_url: item["cover"],
+            description: item["description"],
+            alternate_titles: [],
+            authors: [],
+            status: status,
+            year: year,
+            genres: [],
+            extra: #{ roliascan_id: `${item["id"]}`, type: item["type"] }
+        });
+    }
+    series
+}
+
+// String replace that works whichever `replace` overload Rhai resolves
+// (the built-in mutates in place and returns (), the host's returns a copy).
+fn rep(s, from, to) {
+    let t = s;
+    let r = t.replace(from, to);
+    if type_of(r) == "string" { r } else { t }
+}
+
+fn html_unescape(s) {
+    if s == () { return s; }
+    let t = s;
+    t = rep(t, "&#8217;", "’");
+    t = rep(t, "&#8216;", "‘");
+    t = rep(t, "&#8220;", "“");
+    t = rep(t, "&#8221;", "”");
+    t = rep(t, "&#8211;", "–");
+    t = rep(t, "&#038;", "&");
+    t = rep(t, "&amp;", "&");
+    t = rep(t, "&quot;", "\"");
+    t = rep(t, "&#039;", "'");
+    t
+}
+
+fn search_series(query, page, auth) {
+    let series = load_catalog(page, query, "post_desc");
+    #{ series: series, has_more: series.len() >= 24, total: series.len() }
 }
 
 fn get_series(id_or_url, auth) {
-    let url = id_or_url;
-    if !id_or_url.starts_with("http") {
-        url = `${BASE_URL}/manga/${id_or_url}`;
-    }
+    let url = normalize_url(id_or_url);
 
     let html = fetch_html(url);
     let doc = html_parse(html);
@@ -155,7 +149,7 @@ fn get_series(id_or_url, auth) {
         let all_imgs = html_select(doc, "img");
         for img in all_imgs {
             let src = element_attr(img, "src");
-            if src != () && src.contains("cdn2.fandommanga.xyz") {
+            if src != () && (src.contains("-cover-") || src.contains("fandommanga.xyz")) {
                 cover = src;
                 break;
             }
@@ -232,10 +226,63 @@ fn get_series(id_or_url, auth) {
         }
     }
 
+    // The site's own quick-search (POST /auth/search) returns the full
+    // synopsis, alt titles, author list and status that the page truncates
+    // or renders only via JS. Match our series by slug.
+    let alt_titles = [];
+    let slug_m = regex_find("/manga/[^/?#]+", url);
+    if title != "" && slug_m != "" {
+        let slug = slug_m.sub_string(7);
+        let headers = get_headers();
+        headers["Accept"] = "application/json";
+        headers["Content-Type"] = "application/json";
+        let raw = "";
+        try {
+            raw = http_post_json_with_headers(`${BASE_URL}/auth/search`, json_stringify(#{ query: title, limit: 20 }), headers);
+        } catch {}
+        let data = json_parse(raw);
+        if type_of(data) == "map" && type_of(data["results"]) == "array" {
+            for r in data["results"] {
+                if r["slug"] != slug { continue; }
+                if type_of(r["alt_titles"]) == "array" {
+                    for t in r["alt_titles"] {
+                        if t != () && t != "" && t != title && !alt_titles.contains(t) { alt_titles.push(t); }
+                    }
+                }
+                if type_of(r["authors"]) == "array" && r["authors"].len() > 0 {
+                    authors = [];
+                    for a in r["authors"] { if a != () && a != "" { authors.push(a); } }
+                }
+                let d = r["description"];
+                if d != () && d != "" && (description == () || d.len() > description.len()) {
+                    description = html_unescape(d);
+                }
+                if cover == () && r["thumbnail"] != () { cover = r["thumbnail"]; }
+                let s = r["status"];
+                if status == () && s != () {
+                    let sl = s.to_lower();
+                    if sl.contains("ongoing") { status = "Ongoing"; }
+                    else if sl.contains("completed") { status = "Completed"; }
+                    else if sl.contains("hiatus") { status = "Hiatus"; }
+                    else if sl.contains("cancel") || sl.contains("dropped") { status = "Cancelled"; }
+                }
+                break;
+            }
+        }
+    }
+    // JSON-LD ComicSeries block as a last resort for status/cover.
+    if status == () {
+        let m = regex_find("\"status\":\"[A-Za-z]+\"", html);
+        if m.contains("Ongoing") { status = "Ongoing"; }
+        else if m.contains("Completed") { status = "Completed"; }
+        else if m.contains("Hiatus") { status = "Hiatus"; }
+    }
+    // Genre links include the type tag ("Manhwa"), which is fine as a genre.
+
     #{
         id: url,
         title: title,
-        alternate_titles: [],
+        alternate_titles: alt_titles,
         description: description,
         cover_url: cover,
         authors: authors,
@@ -246,80 +293,114 @@ fn get_series(id_or_url, auth) {
     }
 }
 
+// The old domain (roliascann.com) is dead (522); stored series/chapter ids
+// from it still point there, so rewrite them onto the live site.
+fn normalize_url(u) {
+    let url = u.trim();
+    if !url.starts_with("http") {
+        if !url.starts_with("/") { url = `/manga/${url}`; }
+        url = `${BASE_URL}${url}`;
+    }
+    url = rep(url, "://www.roliascann.com", "://roliascan.com");
+    url = rep(url, "://roliascann.com", "://roliascan.com");
+    url
+}
+
+// Digits at the end of a regex_find match ("data-manga-id=\"10864\"" -> "10864").
+fn trailing_number(m) {
+    if m == () || m == "" { return ""; }
+    let n = regex_find("\\d+(\\.\\d+)?", m.sub_string(m.index_of("=") + 1));
+    if n == () { "" } else { n }
+}
+
+// The series page carries its numeric WordPress post id on the chapter list
+// container (data-manga-id), which the chapter API needs.
+fn manga_id_for(series_url) {
+    let html = fetch_html(series_url);
+    let m = regex_find("data-manga-id=\"\\d+\"", html);
+    trailing_number(m)
+}
+
+// Since the 2026 redesign the series page ships an empty chapter list and
+// manga.js fills it from GET /auth/manga-chapters (public, no login):
+// {success, chapters:[{id, chapter, title, date, group_id, group_name,
+// language, url}], total, has_more}. Paged by offset, up to 500 per call.
+fn fetch_all_chapters(manga_id) {
+    let all = [];
+    let offset = 0;
+    let headers = get_headers();
+    headers["Accept"] = "application/json";
+    for guard in 0..40 {
+        let url = `${BASE_URL}/auth/manga-chapters?manga_id=${manga_id}&offset=${offset}&limit=500&order=DESC`;
+        let raw = "";
+        try {
+            raw = http_get_with_headers(url, headers);
+        } catch {
+            break;
+        }
+        let data = json_parse(raw);
+        if type_of(data) != "map" || data["chapters"] == () { break; }
+        let batch = data["chapters"];
+        if batch.len() == 0 { break; }
+        for c in batch { all.push(c); }
+        offset += batch.len();
+        if data["has_more"] != true { break; }
+    }
+    all
+}
+
 fn get_chapters(series_id, auth) {
-    let url = series_id;
-    if !series_id.starts_with("http") {
-        url = `${BASE_URL}/manga/${series_id}`;
+    let url = normalize_url(series_id);
+    let manga_id = manga_id_for(url);
+    if manga_id == "" { return []; }
+    let raw = fetch_all_chapters(manga_id);
+
+    // The same chapter number can be uploaded by several groups. Keep one per
+    // number so a download doesn't fetch (and file) the chapter twice: prefer
+    // anything not flagged "Low Quality", then the group that uploaded the
+    // most chapters of this series (the main release line), then the newest.
+    let group_counts = #{};
+    for c in raw {
+        let g = if c["group_name"] == () { "" } else { c["group_name"] };
+        if group_counts.contains(g) { group_counts[g] += 1; } else { group_counts[g] = 1; }
+    }
+    let best = #{};
+    let order = [];
+    for c in raw {
+        let num = c["chapter"];
+        if num == () || num == "" { continue; }
+        num = `${num}`;
+        let g = if c["group_name"] == () { "" } else { c["group_name"] };
+        let score = group_counts[g];
+        if g.to_lower().contains("low quality") { score -= 100000; }
+        c["_score"] = score;
+        if !best.contains(num) {
+            best[num] = c;
+            order.push(num);
+        } else if score > best[num]["_score"] {
+            best[num] = c;
+        }
     }
 
-    let html = fetch_html(url);
-    let doc = html_parse(html);
     let chapters = [];
-
-    // RoliaScan uses /read/ URLs for chapters (e.g., /read/kinato-s-magic/chapter-9)
-    let ch_links = html_select(doc, "a[href*='/read/']");
-
-    // Fallback: also try /chapter links
-    if ch_links.len() == 0 {
-        ch_links = html_select(doc, "a[href*='/chapter']");
-    }
-
-    let seen = #{};
-    let idx = 0;
-
-    for link in ch_links {
-        let href = element_attr(link, "href");
-        if href == () || href == "" { continue; }
-        if seen.contains(href) { continue; }
-
-        // Skip non-chapter links (navigation, etc.)
-        if !href.contains("chapter") { continue; }
-
-        seen[href] = true;
-
-        let ch_title = element_text(link).trim();
-        if ch_title == "" { continue; }
-
-        // Extract chapter number from URL or title
-        let ch_num = `${idx + 1}`;
-
-        // Try URL pattern first: chapter-{number}
-        let url_match = regex_find("chapter-(\\d+\\.?\\d*)", href);
-        if url_match != () && url_match != "" {
-            // url_match is like "chapter-9", extract the number
-            let parts = url_match.split("-");
-            if parts.len() >= 2 {
-                ch_num = parts[1];
-            }
-        }
-
-        // Fallback: try title text
-        if ch_num == `${idx + 1}` {
-            let title_match = regex_find("(?i)chapter[\\s.-]*(\\d+\\.?\\d*)", ch_title);
-            if title_match != () && title_match != "" {
-                // Extract just the number
-                let num = regex_find("\\d+\\.?\\d*", title_match);
-                if num != () && num != "" {
-                    ch_num = num;
-                }
-            } else {
-                let num_match2 = regex_find("(\\d+\\.?\\d*)", ch_title);
-                if num_match2 != () && num_match2 != "" {
-                    ch_num = num_match2;
-                }
-            }
-        }
-
+    for num in order {
+        let c = best[num];
+        let title = c["title"];
+        if title == () || title == "" || title == "N/A" { title = (); } else { title = html_unescape(title); }
+        let group = c["group_name"];
+        if group == "" { group = (); }
         chapters.push(#{
-            id: href,
+            id: c["url"],
             series_id: series_id,
-            number: ch_num,
-            title: ch_title,
-            url: href
+            number: num,
+            title: title,
+            url: c["url"],
+            language: if c["language"] == () { "en" } else { c["language"] },
+            scanlator: group,
+            published_at: c["date"],
+            extra: #{ chapter_id: `${c["id"]}`, group_id: c["group_id"] }
         });
-        idx += 1;
     }
-
     chapters
 }
 
@@ -335,240 +416,79 @@ fn page_headers(referer) {
     }
 }
 
-// True if a URL looks like a real manga page image hosted on the
-// (rotating) RoliaScan page CDN, not a site asset/logo/ad/cover.
-fn is_page_image(src) {
-    if src == () || src == "" { return false; }
-    let s = src.to_lower();
-    // Site assets / chrome — never pages.
-    if s.contains("/assets/") || s.contains("roliascann.com") { return false; }
-    if s.contains("logo") || s.contains("icon") || s.contains("avatar") { return false; }
-    if s.contains("banner") || s.contains("loading") || s.contains("favicon") { return false; }
-    // Must be an image extension.
-    if !(s.contains(".webp") || s.contains(".jpg") || s.contains(".jpeg") || s.contains(".png")) {
-        return false;
+// Resolve a stored chapter id/URL to the site's numeric chapter id.
+// Current URLs end in ".../ch{N}-{id}/". Pre-redesign URLs
+// (".../read/{slug}/chapter-{N}") now redirect to an unrelated chapter, so
+// they are mapped back through the series' chapter list by number.
+fn resolve_chapter_id(url) {
+    let m = regex_find("/ch[0-9.]+-\\d+/?$", url);
+    if m != () && m != "" {
+        let parts = m.split("-");
+        return rep(parts[parts.len() - 1], "/", "");
     }
-    // Known/likely page CDNs. love4awalk is the current host (2026);
-    // fandommanga is the legacy host. Also accept any CDN-style host that
-    // carries a manga page path so future CDN renames keep working.
-    if s.contains("love4awalk.xyz") || s.contains("fandommanga.xyz") { return true; }
-    if s.contains("//cdn") && (s.contains("/chapters/") || s.contains("/manga/")) { return true; }
-    return false;
+    let legacy = regex_find("/read/[^/]+/chapter-[0-9.]+", url);
+    if legacy != () && legacy != "" {
+        let segs = legacy.split("/");
+        let slug = segs[2];
+        let num = segs[3].sub_string(8);
+        let manga_id = manga_id_for(`${BASE_URL}/manga/${slug}/`);
+        if manga_id != "" {
+            for c in fetch_all_chapters(manga_id) {
+                if `${c["chapter"]}` == num { return `${c["id"]}`; }
+            }
+        }
+        return "";
+    }
+    // Unknown shape: the reader page has the id on <body data-chapter-id>.
+    let html = fetch_html(url);
+    trailing_number(regex_find("data-chapter-id=\"\\d+\"", html))
 }
 
 fn get_chapter_pages(chapter_id, auth) {
-    let url = chapter_id;
-    if !chapter_id.starts_with("http") {
+    let url = normalize_url(chapter_id);
+    if !chapter_id.starts_with("http") && chapter_id.starts_with("/") {
         url = `${BASE_URL}${chapter_id}`;
     }
-
-    let html = fetch_html(url);
-    let doc = html_parse(html);
     let pages = [];
-    let seen = #{};
-    let idx = 0;
+    let cid = resolve_chapter_id(url);
+    if cid == "" { return pages; }
 
-    // Page images live as <img src='https://cdn2.love4awalk.xyz/.../N.webp'
-    // class='... img-fluid'> inside the reading-content container. Prefer
-    // those, but fall back to scanning every <img> on the page.
-    let imgs = html_select(doc, ".reading-content img, .read-content img, img.img-fluid");
-    if imgs.len() == 0 {
-        imgs = html_select(doc, "img");
+    // chapter.js loads the images from this public endpoint:
+    // {success, chapter_type: "media"|"text", images: [url, ...]}.
+    let headers = get_headers();
+    headers["Accept"] = "application/json";
+    headers["Referer"] = url;
+    let raw = "";
+    try {
+        raw = http_get_with_headers(`${BASE_URL}/auth/chapter-content?chapter_id=${cid}`, headers);
+    } catch {
+        return pages;
     }
+    let data = json_parse(raw);
+    if type_of(data) != "map" || data["images"] == () { return pages; }
 
-    for img in imgs {
-        let src = element_attr(img, "src");
-        if src == () || src == "" {
-            src = element_attr(img, "data-src");
-        }
-        if src == () || src == "" { continue; }
-        src = src.trim();
-
-        if !is_page_image(src) { continue; }
-        if seen.contains(src) { continue; }
-        seen[src] = true;
-
+    let idx = 0;
+    for img in data["images"] {
+        if img == () || img == "" { continue; }
         pages.push(#{
             index: idx,
-            url: src,
-            referer: url,
-            headers: page_headers(url)
+            url: img,
+            referer: `${BASE_URL}/`,
+            headers: page_headers(`${BASE_URL}/`)
         });
         idx += 1;
     }
-
-    // Fallback: some layouts embed the URLs in JS/JSON rather than <img>.
-    // Match any love4awalk/fandommanga page image URL in the raw HTML.
-    if pages.len() == 0 {
-        let cdn_urls = regex_find_all("https?://[a-z0-9.-]*(?:love4awalk|fandommanga)\\.xyz/[^\"'\\s)]+\\.(?:webp|jpg|jpeg|png)", html);
-        for img_url in cdn_urls {
-            let clean = img_url.trim();
-            if seen.contains(clean) { continue; }
-            seen[clean] = true;
-            pages.push(#{
-                index: idx,
-                url: clean,
-                referer: url,
-                headers: page_headers(url)
-            });
-            idx += 1;
-        }
-    }
-
     pages
 }
 
-/// Get latest updates for browsing
+/// Get latest updates for browsing (newest series first; the catalogue
+/// endpoint has no "recently updated" sort).
 fn get_latest_updates(page, auth) {
-    // Mangapeak theme (2026 redesign): the catalogue lives at /browse/ and the
-    // card grid is injected by JavaScript, so a static fetch returns only a
-    // couple of nav links — we must render it via FlareSolverr. ?page=N serves
-    // the same first page (pagination is infinite-scroll), so one rendered page.
-    let url = `${BASE_URL}/browse/`;
-
-    let html = fetch_rendered(url);
-    let doc = html_parse(html);
-    let series = [];
-
-    // RoliaScan uses simple a > img + h3/h4 structure
-    let items = html_select(doc, "a[href*='/manga/']");
-    let seen = #{};
-
-    for item in items {
-        let href = element_attr(item, "href");
-        if href == () || href == "" { continue; }
-
-        // Skip duplicates and non-series links
-        if seen.contains(href) { continue; }
-        if !href.contains("/manga/") { continue; }
-        // Skip chapter links
-        if href.contains("/chapter") { continue; }
-        if href.contains("/read/") { continue; }
-
-        seen[href] = true;
-
-        // Get cover image first (we need it to extract alt text for title)
-        let cover = ();
-        let img_alt = "";
-        let imgs = html_select(item, "img");
-        if imgs.len() > 0 {
-            cover = element_attr(imgs[0], "src");
-            if cover == () || cover == "" {
-                cover = element_attr(imgs[0], "data-src");
-            }
-            // Get alt text as fallback for title
-            img_alt = element_attr(imgs[0], "alt");
-            if img_alt == () { img_alt = ""; }
-        }
-
-        // Get title from h3, h4, .title, or text content
-        let title = "";
-        let title_els = html_select(item, "h3, h4, .title");
-        if title_els.len() > 0 {
-            title = element_text(title_els[0]).trim();
-        }
-        if title == "" {
-            // Try getting text after the image
-            title = element_text(item).trim();
-            // Clean up - remove extra whitespace
-            if title.len() > 100 {
-                title = "";
-            }
-        }
-        if title == "" && img_alt != "" {
-            // Extract title from img alt attribute (format: "Title manga cover")
-            title = img_alt;
-            if title.ends_with(" manga cover") {
-                title = title.sub_string(0, title.len() - 12);
-            }
-            title = title.trim();
-        }
-
-        if title != "" && cover != () {
-            series.push(#{
-                id: href,
-                title: title,
-                url: href,
-                cover_url: cover,
-                alternate_titles: [],
-                authors: [],
-                status: (),
-                genres: []
-            });
-        }
-    }
-
-    // Single rendered page (see above) — no server-side pagination to follow.
-    let has_more = false;
-    #{ series: series, has_more: has_more }
+    let series = load_catalog(page, "", "post_desc");
+    #{ series: series, has_more: series.len() >= 24 }
 }
 
-/// Get popular manga (uses manga listing with pagination)
+/// Get popular manga
 fn get_popular(page, auth) {
-    // Mangapeak /browse/ grid is JS-injected (see get_latest_updates) — render it.
-    let url = `${BASE_URL}/browse/`;
-
-    let html = fetch_rendered(url);
-    let doc = html_parse(html);
-    let series = [];
-
-    let items = html_select(doc, "a[href*='/manga/']");
-    let seen = #{};
-
-    for item in items {
-        let href = element_attr(item, "href");
-        if href == () || href == "" { continue; }
-        if seen.contains(href) { continue; }
-        if href.contains("/chapter") { continue; }
-        if href.contains("/read/") { continue; }
-
-        seen[href] = true;
-
-        // Get cover image first (we need it to extract alt text for title)
-        let cover = ();
-        let img_alt = "";
-        let imgs = html_select(item, "img");
-        if imgs.len() > 0 {
-            cover = element_attr(imgs[0], "src");
-            if cover == () || cover == "" {
-                cover = element_attr(imgs[0], "data-src");
-            }
-            // Get alt text as fallback for title
-            img_alt = element_attr(imgs[0], "alt");
-            if img_alt == () { img_alt = ""; }
-        }
-
-        let title = "";
-        let title_els = html_select(item, "h3, h4, .title");
-        if title_els.len() > 0 {
-            title = element_text(title_els[0]).trim();
-        }
-        if title == "" {
-            title = element_text(item).trim();
-            if title.len() > 100 { title = ""; }
-        }
-        if title == "" && img_alt != "" {
-            // Extract title from img alt attribute (format: "Title manga cover")
-            title = img_alt;
-            if title.ends_with(" manga cover") {
-                title = title.sub_string(0, title.len() - 12);
-            }
-            title = title.trim();
-        }
-
-        if title != "" && cover != () {
-            series.push(#{
-                id: href,
-                title: title,
-                url: href,
-                cover_url: cover,
-                alternate_titles: [],
-                authors: [],
-                status: (),
-                genres: []
-            });
-        }
-    }
-
-    series
+    load_catalog(page, "", "popular_desc")
 }
