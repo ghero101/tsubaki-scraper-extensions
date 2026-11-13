@@ -1181,10 +1181,20 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest manga updates
 fn get_latest_updates(page, auth) {
+    madara_listing("latest", page)
+}
+
+// Full catalog sync: the whole directory A-Z (m_orderby=alphabet), paged until
+// a page comes back empty. Alphabetical order holds still while the crawl runs.
+fn get_catalog(page, auth) {
+    madara_listing("alphabet", page)
+}
+
+fn madara_listing(order, page) {
     // Madara archive paginates via /manga/page/N/, NOT a ?page= query string.
     // (?page=N is silently ignored, so every page returned page 1 — harmless for
     //  page 1 but broke has_more/pagination.)
-    let url = madara_archive_url("latest", page);
+    let url = madara_archive_url(order, page);
 
     let html = fetch_html(url);
 
@@ -1280,7 +1290,10 @@ fn get_latest_updates(page, auth) {
     if !has_more && series.len() >= 15 {
         has_more = true;
     }
-    if page >= 100 {
+    if order == "alphabet" {
+        // No page cap for the catalog walk; it ends on an empty page.
+        has_more = series.len() > 0;
+    } else if page >= 100 {
         has_more = false;
     }
 

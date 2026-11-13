@@ -766,6 +766,66 @@ fn get_popular(page, auth) {
     #{ series: series, has_more: has_more }
 }
 
+/// The position the catalog sync handed back from our last page
+/// (settings.filters.cursor), or "" on the first call.
+fn catalog_cursor() {
+    let f = settings["filters"];
+    if type_of(f) != "map" { return ""; }
+    let c = f["cursor"];
+    if type_of(c) == "string" { c } else { "" }
+}
+
+/// Full catalog sync: every series, then every anthology, then every doujin,
+/// from the A-Z directories' JSON form (/series.json?page=N, 120 a page with
+/// total_pages). The cursor "section:page" carries the walk across sections.
+fn get_catalog(page, auth) {
+    let sections = ["series", "anthologies", "doujins"];
+    let section = "series";
+    let p = if page < 1 { 1 } else { page };
+    let cursor = catalog_cursor();
+    if cursor != "" {
+        let parts = cursor.split(":");
+        if parts.len() == 2 { section = parts[0]; p = parse_int(parts[1]); }
+    }
+    // No try/catch: a throttled or failed page should surface as an error
+    // (the sync waits and retries it) rather than as an empty page that
+    // ends the walk.
+    let data = json_parse(http_get_with_headers(`${BASE_URL}/${section}.json?page=${p}`, get_headers()));
+    if type_of(data) != "map" || type_of(data["tags"]) != "array" {
+        return #{ series: [], has_more: false };
+    }
+    let prefix = if section == "anthologies" { "anthology:" } else if section == "doujins" { "doujin:" } else { "" };
+    let series = [];
+    for group in data["tags"] {
+        if type_of(group) != "map" { continue; }
+        for letter in group.keys() {
+            for t in group[letter] {
+                let slug = t["permalink"];
+                let name = t["name"];
+                if slug == () || name == () || slug == "" { continue; }
+                series.push(#{
+                    id: `${prefix}${slug}`,
+                    title: name,
+                    url: `${BASE_URL}/${section}/${slug}`,
+                    cover_url: ()
+                });
+            }
+        }
+    }
+    let total = if type_of(data["total_pages"]) == "i64" { data["total_pages"] } else { p };
+    let next = "";
+    if p < total {
+        next = section + ":" + (p + 1);
+    } else {
+        let after = false;
+        for name in sections {
+            if after { next = name + ":1"; break; }
+            if name == section { after = true; }
+        }
+    }
+    #{ series: series, has_more: next != "", next_cursor: next }
+}
+
 // === Helper Functions ===
 
 /// Extract series ID from URL

@@ -400,6 +400,38 @@ fn get_latest_updates(page, auth) {
     #{ series: series, has_more: has_more }
 }
 
+/// The position the catalog sync handed back from our last page
+/// (settings.filters.cursor), or "" on the first call.
+fn catalog_cursor() {
+    let f = settings["filters"];
+    if type_of(f) != "map" { return ""; }
+    let c = f["cursor"];
+    if type_of(c) == "string" { c } else { "" }
+}
+
+/// Full catalog sync: every comic on the site, oldest first. The search API
+/// pages by an opaque cursor (its `page` parameter is ignored), so each page
+/// returns `next_cursor` and the sync hands it back for the next one.
+fn get_catalog(page, auth) {
+    let url = `${BASE_URL}/api/search?type=comic&limit=50&order_by=created_at&order_direction=asc`;
+    let cursor = catalog_cursor();
+    if page > 1 && cursor == "" {
+        // Without the cursor we would only re-read page 1.
+        return #{ series: [], has_more: false };
+    }
+    if cursor != "" { url += `&cursor=${url_encode(cursor)}`; }
+    let data = api_get_json(url);
+    let items = [];
+    if type_of(data) == "map" && type_of(data["data"]) == "array" { items = data["data"]; }
+    let series = [];
+    for item in items {
+        let s = build_series_from_search(item);
+        if s != () { series.push(s); }
+    }
+    let next = if type_of(data) == "map" && type_of(data["next_cursor"]) == "string" { data["next_cursor"] } else { "" };
+    #{ series: series, has_more: series.len() > 0 && next != "", next_cursor: next }
+}
+
 /// Fetch full series details from /api/comics/{hid} and merge into base result.
 /// Returns merged result with authors, artists, and complete genres.
 fn enrich_from_detail(base_result, hid) {

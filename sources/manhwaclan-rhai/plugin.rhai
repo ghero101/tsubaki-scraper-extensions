@@ -1271,5 +1271,12 @@ fn madara_listing(order, page) {
         has_more = false;
     }
 
+    // Many Madara sites page the directory with an ajax "load more" (no
+    // next link) and short pages, so a catalog walk just runs until a page
+    // comes back empty.
+    if order == "alphabet" {
+        has_more = series.len() > 0;
+    }
+
     #{ series: series, has_more: has_more }
 }

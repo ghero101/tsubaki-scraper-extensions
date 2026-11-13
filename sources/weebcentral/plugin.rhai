@@ -718,6 +718,39 @@ fn get_popular(page, auth) {
     #{ series: series, has_more: has_more }
 }
 
+// Full catalog sync: the search page's own A-Z listing of every series
+// (/search/data, 32 a page by offset; the htmx "load more" call), which
+// /latest-updates only reaches for recently updated titles.
+fn get_catalog(page, auth) {
+    let p = if page < 1 { 1 } else { page };
+    let offset = (p - 1) * 32;
+    let headers = get_headers();
+    headers["HX-Request"] = "true";
+    let html = "";
+    try {
+        html = http_get_with_headers(`${BASE_URL}/search/data?limit=32&offset=${offset}&sort=Alphabet&order=Ascending&official=Any&anime=Any&adult=Any&display_mode=Full%20Display`, headers);
+    } catch { html = ""; }
+    let series = [];
+    let seen = #{};
+    for link in html_select(html, "a.line-clamp-1[href*='/series/']") {
+        let href = element_attr(link, "href");
+        if href == () || href == "" { continue; }
+        let id = extract_series_id(href);
+        if id == "" || seen.contains(id) { continue; }
+        let title = element_text(link).trim();
+        if title == "" { continue; }
+        seen[id] = true;
+        series.push(#{
+            id: id,
+            title: title,
+            url: href,
+            cover_url: `https://temp.compsci88.com/cover/normal/${id}.webp`
+        });
+    }
+    // The "load more" trigger for the next offset is only present while more remain.
+    #{ series: series, has_more: series.len() > 0 && html.contains(`offset=${offset + 32}`) }
+}
+
 /// Browse manga (main browse endpoint)
 fn browse(page, filters, auth) {
     // Default to latest updates for browse

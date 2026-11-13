@@ -138,7 +138,7 @@ fn search_series(query, page, auth) {
 
 fn get_latest_updates(page, auth) {
     let p = if page < 1 { 1 } else { page };
-    let parsed = api_get(`/api/series?page=${p}&sort=update&order=desc`);
+    let parsed = api_get(`/api/series?offset=${(p - 1) * 20}&sort=update&order=desc`);
     let arr = data_array(parsed);
     let series = [];
     for it in arr {
@@ -150,7 +150,7 @@ fn get_latest_updates(page, auth) {
 
 fn get_popular(page, auth) {
     let p = if page < 1 { 1 } else { page };
-    let parsed = api_get(`/api/series?page=${p}&sort=popularity&order=desc`);
+    let parsed = api_get(`/api/series?offset=${(p - 1) * 20}&sort=popularity&order=desc`);
     let arr = data_array(parsed);
     let series = [];
     for it in arr {
@@ -158,6 +158,24 @@ fn get_popular(page, auth) {
         if m != () && m.id != () && m.id != "" { series.push(m); }
     }
     series
+}
+
+// Full catalog sync: every series A-Z; the API's meta.has_more says where
+// the directory ends. The API ignores `page` (every page was page 1) and
+// pages by `offset`, 20 at a time.
+fn get_catalog(page, auth) {
+    let p = if page < 1 { 1 } else { page };
+    let parsed = api_get(`/api/series?offset=${(p - 1) * 20}&sort=title&order=asc`);
+    let series = [];
+    for it in data_array(parsed) {
+        let m = map_series_item(it);
+        if m != () && m.id != () && m.id != "" { series.push(m); }
+    }
+    let more = series.len() >= 18;
+    if type_of(parsed) == "map" && type_of(parsed["meta"]) == "map" && type_of(parsed["meta"]["has_more"]) == "bool" {
+        more = parsed["meta"]["has_more"];
+    }
+    #{ series: series, has_more: series.len() > 0 && more }
 }
 
 fn get_series(id_or_url, auth) {

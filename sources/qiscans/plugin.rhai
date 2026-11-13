@@ -173,6 +173,14 @@ fn get_popular(page, auth) {
     list_of(fetch_json(`${API_URL}/series?page=${p}&perPage=24&sort=popular`))
 }
 
+// Full catalog sync: the whole series directory A-Z (/series, totalPages
+// says where it ends); /home/latest only lists recently updated titles.
+fn get_catalog(page, auth) {
+    let p = page_or_one(page);
+    let data = fetch_json(`${API_URL}/series?page=${p}&perPage=24&sort=alphabetical`);
+    #{ series: list_of(data), has_more: more_of(data, p) }
+}
+
 fn search_series(q, page, auth) {
     let p = page_or_one(page);
     let data = fetch_json(`${API_URL}/series/search?q=${url_encode(q.trim())}&page=${p}`);

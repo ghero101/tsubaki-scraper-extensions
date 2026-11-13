@@ -644,6 +644,61 @@ fn get_popular(page, auth) {
 
     return series;
 }
+
+/// The position the catalog sync handed back from our last page
+/// (settings.filters.cursor), or "" on the first call.
+fn catalog_cursor() {
+    let f = settings["filters"];
+    if type_of(f) != "map" { return ""; }
+    let c = f["cursor"];
+    if type_of(c) == "string" { c } else { "" }
+}
+
+/// Full catalog sync: every manga with chapters in the preferred language,
+/// oldest first, 100 a call. The API refuses offset + limit past 10,000, so
+/// the walk is keyed on creation time: the cursor "<createdAtSince>|<offset>"
+/// pages by offset inside a window and, near the cap, opens a new window at
+/// the last createdAt seen.
+fn get_catalog(page, auth) {
+    let since = "";
+    let offset = 0;
+    let cursor = catalog_cursor();
+    if cursor != "" {
+        let parts = cursor.split("|");
+        since = parts[0];
+        if parts.len() > 1 { offset = parse_int(parts[1]); }
+    } else if page > 1 {
+        offset = (page - 1) * 100;
+        if offset + 100 > 10000 { return #{ series: [], has_more: false }; }
+    }
+    let preferred_lang = get_preferred_language();
+    let url = `${BASE_URL}/manga?limit=100&offset=${offset}&includes[]=cover_art&includes[]=author&includes[]=artist&order[createdAt]=asc&hasAvailableChapters=true&availableTranslatedLanguage[]=${preferred_lang}&${build_content_rating_params()}`;
+    if since != "" { url += `&createdAtSince=${since}`; }
+
+    let response_text = auth_http_get(url, auth);
+    let response = json_parse(response_text);
+    if type_of(response) != "map" { throw non_json_error(response_text); }
+    if response.result != "ok" { return #{ series: [], has_more: false }; }
+
+    let series = [];
+    let last_created = "";
+    for manga in response.data {
+        series.push(build_series_result(manga, preferred_lang));
+        last_created = manga.attributes.createdAt;
+    }
+    let has_more = offset + series.len() < response.total && series.len() > 0;
+    let next = "";
+    if has_more {
+        if offset + 200 <= 10000 {
+            next = `${since}|${offset + 100}`;
+        } else {
+            // "2018-01-21T19:07:05+00:00" -> "2018-01-21T19:07:05"; titles
+            // sharing that second come round again and are de-duplicated.
+            next = `${last_created.sub_string(0, 19)}|0`;
+        }
+    }
+    #{ series: series, has_more: has_more, total: response.total, next_cursor: next }
+}
 // MangaUpdates ids: current pages use a base36 slug ("pb8uwds") that encodes
 // the numeric API id (55099564912); old "series.html?id=33" ids are a separate
 // legacy numbering the v1 API doesn't accept. Returns #{ id } for a slug, or
