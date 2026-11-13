@@ -2,8 +2,8 @@
   "manifest_version": 1,
   "id": "philiascans",
   "name": "Philia Scans",
-  "version": "1.2.6",
-  "description": "Philia Scans - Manga and manhua translations",
+  "version": "1.3.0",
+  "description": "Philia Scans - Manga and manhua translations. Page downloads are disabled: the site scrambles its page images.",
   "author": {
     "name": "Tsubaki Team",
     "url": "https://github.com/tsubaki"
@@ -32,8 +32,8 @@
     "browse": true,
     "get_series": true,
     "get_chapters": true,
-    "get_pages": true,
-    "download": true,
+    "get_pages": false,
+    "download": false,
     "get_covers": true
   },
   "authentication": {

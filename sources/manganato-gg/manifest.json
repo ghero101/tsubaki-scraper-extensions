@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "manganato-gg",
   "name": "MangaNato (Unified)",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Unified scraper for MangaNato sites including manganato.gg, mangakakalot.gg, nelomanga.net, natomanga.com, and manganato.com. Distributes requests across all mirrors for maximum reliability.",
   "author": {
     "name": "Tsubaki Community",

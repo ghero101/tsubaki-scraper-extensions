@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "id": "mangadex",
   "name": "MangaDex",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "MangaDex manga source - the largest free manga library with multi-language support. Converted to Rhai with setting support.",
   "author": {
     "name": "Tsubaki Team",

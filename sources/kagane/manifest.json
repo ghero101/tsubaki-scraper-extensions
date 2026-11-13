@@ -2,8 +2,8 @@
   "manifest_version": 1,
   "id": "kagane",
   "name": "Kagane",
-  "version": "1.12.10",
-  "description": "Scraper for Kagane (kagane.to), a manga reading site with a large collection including exclusive content.",
+  "version": "1.13.0",
+  "description": "Scraper for Kagane (kagane.moe), a manga reading site with a large collection including exclusive content.",
   "author": {
     "name": "Tsubaki Community",
     "url": "https://github.com/tsubaki"
@@ -28,7 +28,11 @@
       "www.kagane.org",
       "yuzuki.kagane.org",
       "akari.kagane.org",
-      "tsubaki-browser"
+      "tsubaki-browser",
+      "kagane.moe",
+      "www.kagane.moe",
+      "akari.kagane.moe",
+      "kstatic.to"
     ],
     "requires_cookies": true,
     "requires_javascript": true,
@@ -47,7 +51,7 @@
     "type": "none"
   },
   "source_info": {
-    "base_url": "https://kagane.to",
+    "base_url": "https://kagane.moe",
     "language": "en",
     "supported_languages": [
       "en"

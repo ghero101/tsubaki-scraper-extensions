@@ -1,5 +1,11 @@
 // Kagane Scraper Add-on (Rhai)
-// Hybrid scraper for kagane.to — Yuzuki API + FlareSolverr + Browser rendering
+// Hybrid scraper for Kagane — Yuzuki API + FlareSolverr + Browser rendering
+//
+// NOTE (2026-11): kagane.to stopped resolving (NXDOMAIN), which failed every
+// monitored series in prod. kagane.org is now only a mirror picker ("Choose an
+// address"); the working mirror it lists is kagane.moe, which serves the same
+// /api/v2 on its own host. If the mirror moves again, check kagane.org and
+// change BASE_URL/API_BASE below (and the manifest's allowed_domains).
 //
 // NOTE (2026-07): kagane retired the dedicated API subdomain. The API host went
 // yuzuki.kagane.org → yuzuki.kagane.to → (now) the main domain kagane.to. The
@@ -24,8 +30,8 @@
 // IDs are UUIDs (e.g., 019c4756-d998-787a-bf75-9f095ea56701)
 // Cover images: https://kagane.to/api/v2/image/{UUID}/compressed
 
-const BASE_URL = "https://kagane.to";
-const API_BASE = "https://kagane.to/api/v2";
+const BASE_URL = "https://kagane.moe";
+const API_BASE = "https://kagane.moe/api/v2";
 
 // ============================================================================
 // API Helpers
@@ -35,8 +41,8 @@ fn api_headers() {
     #{
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         "Accept": "application/json",
-        "Origin": "https://kagane.to",
-        "Referer": "https://kagane.to/"
+        "Origin": BASE_URL,
+        "Referer": BASE_URL + "/"
     }
 }
 
@@ -143,7 +149,7 @@ fn has_real_content(html) {
     html.len() > 60000 && (
         html.contains("data-slot=\"carousel-item\"") ||
         html.contains("/series/019") ||
-        html.contains("kagane.to/api/v2") ||
+        html.contains("/api/v2/image") ||
         html.contains("font-bold") && html.contains("/series/")
     )
 }
@@ -342,7 +348,7 @@ fn extract_series_list(html) {
     if series.len() == 0 {
         let pairs = regex_find_all("href=\"/series/([0-9a-f-]{36})\"", html);
         let titles = regex_find_all("<h3[^>]*>([^<]+)</h3>", html);
-        let covers = regex_find_all("src=\"(https://kagane.to/api/v2/image[^\"]+)\"", html);
+        let covers = regex_find_all("src=\"(https://kagane\\.[a-z]+/api/v2/image[^\"]+)\"", html);
 
         let unique_sids = [];
         for p in pairs {

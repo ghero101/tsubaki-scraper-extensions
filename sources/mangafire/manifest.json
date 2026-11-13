@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "mangafire",
   "name": "MangaFire",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "description": "Scraper for MangaFire (mangafire.to), a popular manga aggregator with multi-language support and a large catalog.",
   "author": {
     "name": "Tsubaki Community",
@@ -100,5 +100,10 @@
   },
   "previous_ids": [
     "mangafire-rhai"
-  ]
+  ],
+  "deprecated": {
+    "is_deprecated": true,
+    "reason": "Site redesigned (Nov 2026): every page is now client-rendered from /api/* endpoints that require a per-request token minted by obfuscated site JS, and the reader lazy-loads pages. The old selectors match nothing, so browse/search/chapters return empty. Needs a browser-driven rewrite; disabled until then.",
+    "sunset_date": "2026-11-13"
+  }
 }

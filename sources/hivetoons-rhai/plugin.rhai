@@ -441,6 +441,18 @@ fn get_chapter_pages(chapter_id, auth) {
         matches = regex_find_all("https://storage\\.hivetoon\\.com[^\"\\s\\\\]+", html);
     }
 
+    // The reader HTML also carries site chrome from the same bucket: the
+    // homepage "featured" banners (/upload/series/featured/...) and logos
+    // (/upload/settings/...). Those were being saved as the first pages of
+    // every chapter. Keep only images stored under this series' own folder
+    // when there are any.
+    let own = [];
+    let own_prefix = `/upload/series/${series_slug}/`;
+    for m in matches {
+        if m.contains(own_prefix) { own.push(m); }
+    }
+    if own.len() > 0 { matches = own; }
+
     // Deduplicate while preserving order
     let seen = #{};
     let pages = [];
@@ -463,7 +475,8 @@ fn get_chapter_pages(chapter_id, auth) {
         seen[clean_url] = true;
 
         // Skip non-page images (icons, logos, thumbnails, etc.)
-        if clean_url.contains("/icon") || clean_url.contains("/logo") || clean_url.contains("/favicon") {
+        if clean_url.contains("/icon") || clean_url.contains("/logo") || clean_url.contains("/favicon")
+            || clean_url.contains("/series/featured/") || clean_url.contains("/upload/settings/") {
             continue;
         }
 

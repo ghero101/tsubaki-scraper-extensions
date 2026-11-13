@@ -602,7 +602,7 @@ fn get_latest_updates(page, auth) {
     let preferred_lang = get_preferred_language();
     let content_rating_params = build_content_rating_params();
 
-    let url = `${BASE_URL}/manga?limit=25&offset=${offset}&includes[]=cover_art&includes[]=author&includes[]=artist&order[updatedAt]=desc&${content_rating_params}`;
+    let url = `${BASE_URL}/manga?limit=25&offset=${offset}&includes[]=cover_art&includes[]=author&includes[]=artist&order[latestUploadedChapter]=desc&hasAvailableChapters=true&availableTranslatedLanguage[]=${preferred_lang}&${content_rating_params}`;
 
     let response_text = auth_http_get(url, auth);
     let response = json_parse(response_text);
