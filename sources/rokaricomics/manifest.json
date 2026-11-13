@@ -1,0 +1,61 @@
+{
+  "manifest_version": 1,
+  "id": "rokaricomics",
+  "name": "Rokari Comics",
+  "version": "1.0.0",
+  "description": "Rokari Comics — read chapters straight from the scanlation group's own site (rokaricomics.com).",
+  "author": {
+    "name": "Tsubaki Community",
+    "url": "https://github.com/ghero101"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ghero101/tsubaki-scraper-extensions",
+  "addon_type": "scraper",
+  "icon_path": "icon.png",
+  "nsfw": false,
+  "technology": "rhai",
+  "entry_point": {
+    "file": "plugin.rhai"
+  },
+  "capabilities": {
+    "level": "http_only",
+    "allowed_domains": [
+      "rokaricomics.com",
+      "www.rokaricomics.com",
+      "i0.wp.com",
+      "i1.wp.com",
+      "i2.wp.com",
+      "i3.wp.com"
+    ],
+    "requires_cookies": false,
+    "requires_javascript": false,
+    "cloudflare_protected": false
+  },
+  "features": {
+    "search": true,
+    "browse": true,
+    "get_series": true,
+    "get_chapters": true,
+    "get_pages": true,
+    "download": true,
+    "get_covers": true
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "source_info": {
+    "base_url": "https://rokaricomics.com",
+    "language": "en",
+    "content_rating": "suggestive",
+    "tags": [
+      "scanlation",
+      "scanlator",
+      "manhwa",
+      "mangathemesia"
+    ]
+  },
+  "rate_limiting": {
+    "requests_per_minute": 30,
+    "burst_limit": 5
+  }
+}
