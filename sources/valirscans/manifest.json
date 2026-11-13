@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "valirscans",
   "name": "Valir Scans",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Valir Scans — read chapters straight from the scanlation group's own site (valirscans.org).",
   "author": {
     "name": "Tsubaki Community",
