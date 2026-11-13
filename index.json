@@ -1,6 +1,6 @@
 {
-  "version": 96,
-  "updated_at": "2026-11-13T10:32:31Z",
+  "version": 97,
+  "updated_at": "2026-11-13T12:43:08Z",
   "addons": [
     {
       "id": "asurascans",
@@ -1282,16 +1282,16 @@
     {
       "id": "hivetoons",
       "name": "HiveToons",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "description": "HiveToons - Manhwa and webtoon scanlation group (formerly Void Scans)",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/hivetoons-rhai/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/hivetoons-rhai/hivetoons-rhai_1-0-5.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/hivetoons-rhai/hivetoons-rhai_1-0-6.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/hivetoons-rhai/manifest.json",
-      "latest_version": "1.0.5",
+      "latest_version": "1.0.6",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/hivetoons-rhai/hivetoons-rhai_1-0-0.zip",
@@ -1317,6 +1317,11 @@
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/hivetoons-rhai/hivetoons-rhai_1-0-5.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "Pages: stop saving homepage banners and logos as the first pages of each chapter."
+        },
+        "1.0.6": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/hivetoons-rhai/hivetoons-rhai_1-0-6.zip",
+          "released_at": "2026-11-13T12:43:08Z",
+          "changelog": "Opening a series no longer fails with 'series not found' when its URL name doesn't match its title; it is now looked up directly by its URL name."
         }
       }
     },
@@ -2033,84 +2038,104 @@
     {
       "id": "vortexscans",
       "name": "Vortex Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Vortex Scans — read chapters straight from the scanlation group's own site (vortexscans.org).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/vortexscans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/vortexscans/vortexscans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/vortexscans/vortexscans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/vortexscans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/vortexscans/vortexscans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/vortexscans/vortexscans_1-0-1.zip",
+          "released_at": "2026-11-13T12:43:08Z",
+          "changelog": "Opening a series no longer fails with 'series not found' when its URL name doesn't match its title; it is now looked up directly by its URL name."
         }
       }
     },
     {
       "id": "kenscans",
       "name": "Ken Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Ken Scans — read chapters straight from the scanlation group's own site (kencomics.com).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/kenscans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kenscans/kenscans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kenscans/kenscans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/kenscans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kenscans/kenscans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kenscans/kenscans_1-0-1.zip",
+          "released_at": "2026-11-13T12:43:08Z",
+          "changelog": "Opening a series no longer fails with 'series not found' when its URL name doesn't match its title; it is now looked up directly by its URL name."
         }
       }
     },
     {
       "id": "magusmanga",
       "name": "Magus Manga",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Magus Manga — read chapters straight from the scanlation group's own site (magustoon.org).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/magusmanga/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/magusmanga/magusmanga_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/magusmanga/magusmanga_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/magusmanga/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/magusmanga/magusmanga_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/magusmanga/magusmanga_1-0-1.zip",
+          "released_at": "2026-11-13T12:43:08Z",
+          "changelog": "Opening a series no longer fails with 'series not found' when its URL name doesn't match its title; it is now looked up directly by its URL name."
         }
       }
     },
     {
       "id": "nyxscans",
       "name": "Nyx Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Nyx Scans — read chapters straight from the scanlation group's own site (nyxscans.com).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/nyxscans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/nyxscans/nyxscans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/nyxscans/nyxscans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/nyxscans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/nyxscans/nyxscans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/nyxscans/nyxscans_1-0-1.zip",
+          "released_at": "2026-11-13T12:43:08Z",
+          "changelog": "Opening a series no longer fails with 'series not found' when its URL name doesn't match its title; it is now looked up directly by its URL name."
         }
       }
     },

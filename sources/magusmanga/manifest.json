@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "magusmanga",
   "name": "Magus Manga",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Magus Manga — read chapters straight from the scanlation group's own site (magustoon.org).",
   "author": {
     "name": "Tsubaki Community",
