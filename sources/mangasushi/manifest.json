@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "mangasushi",
   "name": "Mangasushi",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Mangasushi (mangasushi.org): manga straight from the Mangasushi scanlation group's own site.",
   "author": {
     "name": "Tsubaki Team",

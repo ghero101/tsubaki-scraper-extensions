@@ -1134,9 +1134,21 @@ fn extract_page_images(html, referer_url) {
 
 /// Get latest manga updates
 fn get_latest_updates(page, auth) {
+    madara_listing("", page)
+}
+
+// Full catalog sync: the whole directory A-Z (m_orderby=alphabet), paged
+// until the site runs out of pages. Alphabetical order holds still while the
+// crawl runs; the latest order reshuffles and can skip series.
+fn get_catalog(page, auth) {
+    madara_listing("alphabet", page)
+}
+
+fn madara_listing(order, page) {
     // Toonily's catalog listing is /webtoons/ (legacy /manga/?m_orderby= is dead
     // → 0 cards). Madara-style pagination: /webtoons/page/{n}/.
     let url = if page > 1 { `${BASE_URL}/webtoons/page/${page}/` } else { `${BASE_URL}/webtoons/` };
+    if order != "" { url += `?m_orderby=${order}`; }
 
     // The listing is Cloudflare-gated and cards only appear in the rendered DOM;
     // the cheap impersonation tier can return a 200 shell that passes the CF
@@ -1238,8 +1250,17 @@ fn get_latest_updates(page, auth) {
     if !has_more && series.len() >= 15 {
         has_more = true;
     }
-    if page >= 100 {
+    // The page cap only guards the latest listing; a catalog walk ends when
+    // the site runs out of pages.
+    if order != "alphabet" && page >= 100 {
         has_more = false;
+    }
+
+    // Many Madara sites page the directory with an ajax "load more" (no
+    // next link) and short pages, so a catalog walk just runs until a page
+    // comes back empty.
+    if order == "alphabet" {
+        has_more = series.len() > 0;
     }
 
     #{ series: series, has_more: has_more }

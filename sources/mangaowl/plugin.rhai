@@ -493,10 +493,14 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest updates
 fn get_latest_updates(page, auth) {
+    madara_listing("latest", page)
+}
+
+fn madara_listing(order, page) {
     // MangaOwl uses /read-1/ with Madara's m_orderby and page/ pagination
-    let url = `${BASE_URL}/read-1/?m_orderby=latest`;
+    let url = `${BASE_URL}/read-1/?m_orderby=${order}`;
     if page > 1 {
-        url = `${BASE_URL}/read-1/page/${page}/?m_orderby=latest`;
+        url = `${BASE_URL}/read-1/page/${page}/?m_orderby=${order}`;
     }
 
     let html = fetch_html(url);
@@ -588,9 +592,17 @@ fn get_latest_updates(page, auth) {
         has_more = true;
     }
 
-    // Limit pages to prevent infinite loops
-    if page >= 50 {
+    // The page cap only guards the latest listing; a catalog walk ends when
+    // the site runs out of pages.
+    if order != "alphabet" && page >= 50 {
         has_more = false;
+    }
+
+    // Many Madara sites page the directory with an ajax "load more" (no
+    // next link) and short pages, so a catalog walk just runs until a page
+    // comes back empty.
+    if order == "alphabet" {
+        has_more = series.len() > 0;
     }
 
     #{ series: series, has_more: has_more }
@@ -693,6 +705,13 @@ fn get_popular(page, auth) {
     }
 
     #{ series: series, has_more: has_more }
+}
+
+// Full catalog sync: the whole directory A-Z (m_orderby=alphabet), paged
+// until the site runs out of pages. Alphabetical order holds still while the
+// crawl runs; the latest order reshuffles and can skip series.
+fn get_catalog(page, auth) {
+    madara_listing("alphabet", page)
 }
 
 // === Helper Functions ===

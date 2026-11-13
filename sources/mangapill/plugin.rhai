@@ -1045,6 +1045,48 @@ fn get_latest_updates(page, auth) {
     #{ series: series, has_more: has_more }
 }
 
+/// "365-ho-no-yuuki" -> "365 Ho No Yuuki".
+fn title_from_slug(slug) {
+    let words = [];
+    for w in slug.split("-") {
+        if w == "" { continue; }
+        words.push(w.sub_string(0, 1).to_upper() + w.sub_string(1));
+    }
+    words.join(" ")
+}
+
+/// Full catalog sync. Search stops at 20 pages (1,000 titles) whatever the
+/// filters, so the catalog comes from the site's own sitemap, which lists
+/// every series (/manga/{id}/{slug}, ~9,000), 500 per page. It has no titles
+/// or covers: the title is spelled from the slug (the catalog matches on the
+/// normalized title, which a slug spells the same way) and the cover from
+/// the id, as the reader does; get_series has the real ones.
+fn get_catalog(page, auth) {
+    let p = if page < 1 { 1 } else { page };
+    let xml = "";
+    try { xml = http_get_with_headers(`${BASE_URL}/static/sitemaps/sitemap1.xml`, get_headers()); } catch { xml = ""; }
+    let hrefs = regex_find_all("/manga/[0-9]+/[^<\"/]+", xml);
+    let start = (p - 1) * 500;
+    let series = [];
+    let i = start;
+    while i < hrefs.len() && i < start + 500 {
+        let href = hrefs[i];
+        i += 1;
+        let manga_id = extract_manga_id(href);
+        if manga_id == "" { continue; }
+        let parts = href.split("/");
+        series.push(#{
+            id: href,
+            title: title_from_slug(parts[parts.len() - 1]),
+            cover_url: build_cover_url(manga_id),
+            url: `${BASE_URL}${href}`,
+            content_rating: "safe",
+            extra: #{ source_site: "mangapill", manga_id: manga_id }
+        });
+    }
+    #{ series: series, has_more: start + 500 < hrefs.len() }
+}
+
 /// Browse popular/trending (same as latest for MangaPill)
 fn browse(page, category, auth) {
     if category == "latest" || category == "new" {

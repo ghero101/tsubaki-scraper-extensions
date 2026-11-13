@@ -1229,6 +1229,37 @@ fn get_latest_updates(page, auth) {
     #{ series: series, has_more: has_more }
 }
 
+/// Full catalog sync: the A-Z manga directory (/directory/N.htm?az, 70 a
+/// page, ~140 pages), every series the site carries. /releases/ (latest)
+/// only reaches recently updated titles.
+fn get_catalog(page, auth) {
+    let p = if page < 1 { 1 } else { page };
+    let html = fetch_html(`${BASE_URL}/directory/${p}.htm?az`);
+    if html == "" { return #{ series: [], has_more: false }; }
+    let series = [];
+    let seen = #{};
+    for li in html_select(html, "ul.manga-list-1-list li") {
+        let links = html_select(li, "p.manga-list-1-item-title a");
+        if links.len() == 0 { continue; }
+        let href = element_attr(links[0], "href");
+        if href == () || href == "" { continue; }
+        let slug = extract_slug(href);
+        if slug == "" || seen.contains(slug) { continue; }
+        let title = clean_text(element_text(links[0]));
+        if title == "" { continue; }
+        seen[slug] = true;
+        let cover_url = ();
+        let imgs = html_select(li, "img.manga-list-1-cover");
+        if imgs.len() > 0 {
+            cover_url = element_attr(imgs[0], "src");
+            if cover_url != () && cover_url.starts_with("//") { cover_url = "https:" + cover_url; }
+        }
+        series.push(#{ id: slug, title: title, url: `${BASE_URL}/manga/${slug}/`, cover_url: cover_url });
+    }
+    let has_more = series.len() > 0 && html.contains(`/directory/${p + 1}.htm`);
+    #{ series: series, has_more: has_more }
+}
+
 /// Browse manga directory
 fn browse(page, filters, auth) {
     // FanFox directory with pagination
