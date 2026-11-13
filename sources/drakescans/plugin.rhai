@@ -129,7 +129,7 @@ fn cover_from_img(img) {
     let src = element_attr(img, "src");
     if src == () { return (); }
     let m = regex_find("url=[^&]+", src);
-    if m != "" { return url_decode(m.sub_string(4)); }
+    if m != "" { return absolutise(url_decode(m.sub_string(4))); }   // next/image wraps a site-relative /uploads path
     absolutise(src)
 }
 

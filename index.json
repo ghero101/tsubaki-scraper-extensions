@@ -1,6 +1,6 @@
 {
-  "version": 97,
-  "updated_at": "2026-11-13T12:43:08Z",
+  "version": 98,
+  "updated_at": "2026-11-13T13:07:14Z",
   "addons": [
     {
       "id": "asurascans",
@@ -2142,63 +2142,78 @@
     {
       "id": "drakescans",
       "name": "Drake Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Drake Scans — read chapters straight from the scanlation group's own site (drakecomic.net).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/drakescans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/drakescans/drakescans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/drakescans/drakescans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/drakescans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/drakescans/drakescans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/drakescans/drakescans_1-0-1.zip",
+          "released_at": "2026-11-13T13:07:14Z",
+          "changelog": "Browse and search covers show again (they were site-relative links)."
         }
       }
     },
     {
       "id": "elftoon",
       "name": "Elf Toon",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Elf Toon — read chapters straight from the scanlation group's own site (elftoon.net).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/elftoon/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/elftoon/elftoon_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/elftoon/elftoon_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/elftoon/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/elftoon/elftoon_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/elftoon/elftoon_1-0-1.zip",
+          "released_at": "2026-11-13T13:07:14Z",
+          "changelog": "Browse and search covers show again (they were site-relative links)."
         }
       }
     },
     {
       "id": "valirscans",
       "name": "Valir Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Valir Scans — read chapters straight from the scanlation group's own site (valirscans.org).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/valirscans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/valirscans/valirscans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/valirscans/valirscans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/valirscans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/valirscans/valirscans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/valirscans/valirscans_1-0-1.zip",
+          "released_at": "2026-11-13T13:07:14Z",
+          "changelog": "Browse and search covers show again (they were site-relative links)."
         }
       }
     },
