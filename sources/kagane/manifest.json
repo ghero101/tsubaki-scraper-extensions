@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "kagane",
   "name": "Kagane",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Scraper for Kagane (kagane.moe), a manga reading site with a large collection including exclusive content.",
   "author": {
     "name": "Tsubaki Community",
