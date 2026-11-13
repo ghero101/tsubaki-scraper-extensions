@@ -199,6 +199,13 @@ fn search_series(q, page, auth) {
 /// The API has no by-slug detail route, so find the series through a title
 /// search on its slug and pick the exact slug match.
 fn find_item(slug) {
+    // Direct lookup by slug ({post:{...}}); the title search below misses
+    // slugs that don't read like the title ("a-stepmother-s-m-rchen" for
+    // "A Stepmother's Märchen").
+    let direct = fetch_json(`${API_URL}/post?postSlug=${url_encode(slug)}`);
+    if type_of(direct) == "map" && type_of(direct["post"]) == "map" && str_or(direct["post"]["slug"], "") != "" {
+        return direct["post"];
+    }
     let terms = [slug.replace("-", " "), slug];
     for t in terms {
         let url = `${API_URL}/query?page=1&perPage=${per_page()}&series_type=Comic&adult=true&order=desc&orderBy=updated_at&status=All&tags_ids=[]&query_string=${url_encode(t)}`;

@@ -31,6 +31,21 @@ fn api_get(url) {
     }
 }
 
+/// Look a series up by slug. The direct /post?postSlug= route is exact; the
+/// title search can miss (or return a different series first), so it is only
+/// the fallback. Returns a /query-shaped body: {"posts":[...]}.
+fn slug_query(slug) {
+    let direct = api_get(`${API_URL}/post?postSlug=${url_encode(slug)}`);
+    if direct != () && direct != "" {
+        let d = ();
+        try { d = json_parse(direct); } catch {}
+        if type_of(d) == "map" && type_of(d["post"]) == "map" && d["post"]["slug"] == slug {
+            return json_stringify(#{ posts: [d["post"]] });
+        }
+    }
+    api_get(`${API_URL}/query?page=1&perPage=20&series_type=Comic&query_string=${url_encode(slug)}&adult=true&order=desc&orderBy=updated_at&status=All&tags_ids=[]`)
+}
+
 fn get_source_info() {
     #{
         id: "hivetoons",
@@ -145,8 +160,7 @@ fn get_series(id_or_url, auth) {
     }
 
     // Query API searching by slug to find the series
-    let url = `${API_URL}/query?page=1&perPage=20&series_type=Comic&query_string=${url_encode(slug)}&adult=true&order=desc&orderBy=updated_at&status=All&tags_ids=[]`;
-    let response = api_get(url);
+    let response = slug_query(slug);
 
     if response == "" || response == () {
         return #{ id: slug, title: "", error: "Failed to fetch series" };
@@ -288,8 +302,7 @@ fn get_chapters(series_id, auth) {
     }
 
     // Step 1: Query API to find the series and get its numeric id
-    let query_url = `${API_URL}/query?page=1&perPage=20&series_type=Comic&query_string=${url_encode(slug)}&adult=true&order=desc&orderBy=updated_at&status=All&tags_ids=[]`;
-    let response = api_get(query_url);
+    let response = slug_query(slug);
 
     if response == "" || response == () {
         return [];
