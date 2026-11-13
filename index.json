@@ -1,6 +1,6 @@
 {
-  "version": 98,
-  "updated_at": "2026-11-13T13:07:14Z",
+  "version": 99,
+  "updated_at": "2026-11-13T16:57:28Z",
   "addons": [
     {
       "id": "asurascans",
@@ -1093,16 +1093,16 @@
     {
       "id": "kagane",
       "name": "Kagane",
-      "version": "1.13.0",
+      "version": "1.13.1",
       "description": "Scraper for Kagane (kagane.moe), a manga reading site with a large collection including exclusive content.",
       "author": "Tsubaki Community",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": true,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/kagane/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kagane/kagane_1-13-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kagane/kagane_1-13-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/kagane/manifest.json",
-      "latest_version": "1.13.0",
+      "latest_version": "1.13.1",
       "versions": {
         "1.3.1": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kagane/kagane_1-3-1.zip",
@@ -1173,6 +1173,11 @@
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kagane/kagane_1-13-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "kagane.to is gone; use the kagane.moe mirror (kagane.org lists it). Page downloads also need the matching tsubaki-browser update."
+        },
+        "1.13.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kagane/kagane_1-13-1.zip",
+          "released_at": "2026-11-13T16:57:28Z",
+          "changelog": "A chapter list that fails to load (e.g. a Cloudflare timeout) is now reported as an error instead of an empty list, so scans retry or use the series' other sources."
         }
       },
       "previous_ids": [
