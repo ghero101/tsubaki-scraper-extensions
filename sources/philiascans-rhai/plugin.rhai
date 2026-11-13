@@ -1224,6 +1224,17 @@ fn parse_chapter_list(html, series_id, seen) {
 
 /// Get page image URLs for a chapter
 fn get_chapter_pages(chapter_id, auth) {
+    // 2026-11: Philia Scans moved its reader to "protected" chapters. Every
+    // page image is served tile-scrambled ("scrambled": true in the reader's
+    // data) and only the site's own JS puts the tiles back together. The old
+    // selectors below now match nothing in the reader, so the regex fallback
+    // was returning cover art and the og:image as "pages", which produced
+    // junk CBZ files. Refuse instead of downloading garbage; browse, search,
+    // series details and chapter lists still work for monitoring.
+    throw "Philia Scans scrambles its page images (site-side page protection); downloads from this source are not supported. Use another source for chapter files.";
+}
+
+fn get_chapter_pages_legacy(chapter_id, auth) {
     let url = chapter_id;
 
     if !chapter_id.starts_with("http") {

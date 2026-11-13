@@ -821,19 +821,24 @@ fn get_chapter_pages(chapter_id, auth) {
         let image_paths = regex_find_all("\"([^\"]+)\"", array_content);
 
         // Find CDN URLs from the page
+        // The reader declares its image hosts as `var cdns = ["https:\/\/img-r1...", ...]`.
+        // Use the first of those. The first 2xstorage URL in the page is the
+        // og:image thumbnail host (img-r2), which answers 503 for chapter pages.
         let cdn_url = get_img_cdn();
-        let cdn_match = regex_find("(https://[^\"']+2xstorage\\.com[^\"']*)", html);
-        if cdn_match != "" {
-            // Extract just the base CDN URL
-            let cdn_base = regex_find("https://[^/]+\\.2xstorage\\.com", cdn_match);
-            if cdn_base != "" {
-                cdn_url = cdn_base;
+        let cdns_decl = regex_find("cdns\\s*=\\s*\\[\\s*\"[^\"]+\"", html);
+        if cdns_decl != "" {
+            let first = regex_find("https?:[^\"]+", cdns_decl.replace("\\/", "/"));
+            if first != "" {
+                if first.ends_with("/") { first = first.sub_string(0, first.len() - 1); }
+                cdn_url = first;
             }
         }
 
         for img_path in image_paths {
             // Clean the path - remove quotes
-            let clean_path = img_path.replace("\"", "").trim();
+            // The array is JSON, so paths arrive with escaped slashes
+            // ("beyblade-x\/43\/0.webp"); left in, the CDN 404s every page.
+            let clean_path = img_path.replace("\"", "").replace("\\/", "/").trim();
             if clean_path == "" {
                 continue;
             }
