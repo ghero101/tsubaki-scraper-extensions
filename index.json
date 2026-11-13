@@ -1,6 +1,6 @@
 {
-  "version": 95,
-  "updated_at": "2026-11-13T02:26:28Z",
+  "version": 96,
+  "updated_at": "2026-11-13T10:32:31Z",
   "addons": [
     {
       "id": "asurascans",
@@ -1929,84 +1929,104 @@
     {
       "id": "thunderscans",
       "name": "Thunder Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Thunder Scans — read chapters straight from the scanlation group's own site (en-thunderscans.com).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/thunderscans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/thunderscans/thunderscans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/thunderscans/thunderscans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/thunderscans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/thunderscans/thunderscans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/thunderscans/thunderscans_1-0-1.zip",
+          "released_at": "2026-11-13T10:32:31Z",
+          "changelog": "Skips paid early-access chapters that show a coin price but keep their link, and says when a chapter is coin-locked instead of returning no pages."
         }
       }
     },
     {
       "id": "kingofshojo",
       "name": "Kingofshojo",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Kingofshojo — read chapters straight from the scanlation group's own site (kingofshojo.com).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/kingofshojo/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kingofshojo/kingofshojo_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kingofshojo/kingofshojo_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/kingofshojo/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kingofshojo/kingofshojo_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/kingofshojo/kingofshojo_1-0-1.zip",
+          "released_at": "2026-11-13T10:32:31Z",
+          "changelog": "Skips paid early-access chapters that show a coin price but keep their link, and says when a chapter is coin-locked instead of returning no pages."
         }
       }
     },
     {
       "id": "lagoonscans",
       "name": "Lagoon Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Lagoon Scans — read chapters straight from the scanlation group's own site (lagoonscans.com).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/lagoonscans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/lagoonscans/lagoonscans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/lagoonscans/lagoonscans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/lagoonscans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/lagoonscans/lagoonscans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/lagoonscans/lagoonscans_1-0-1.zip",
+          "released_at": "2026-11-13T10:32:31Z",
+          "changelog": "Skips paid early-access chapters that show a coin price but keep their link, and says when a chapter is coin-locked instead of returning no pages."
         }
       }
     },
     {
       "id": "madarascans",
       "name": "Madara Scans",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Madara Scans — read chapters straight from the scanlation group's own site (madarascans.net).",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/madarascans/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/madarascans/madarascans_1-0-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/madarascans/madarascans_1-0-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/madarascans/manifest.json",
-      "latest_version": "1.0.0",
+      "latest_version": "1.0.1",
       "versions": {
         "1.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/madarascans/madarascans_1-0-0.zip",
           "released_at": "2026-11-13T02:26:28Z",
           "changelog": "New: read chapters straight from the scanlation group's site."
+        },
+        "1.0.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/madarascans/madarascans_1-0-1.zip",
+          "released_at": "2026-11-13T10:32:31Z",
+          "changelog": "Skips paid early-access chapters that show a coin price but keep their link, and says when a chapter is coin-locked instead of returning no pages."
         }
       }
     },

@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "lagoonscans",
   "name": "Lagoon Scans",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lagoon Scans — read chapters straight from the scanlation group's own site (lagoonscans.com).",
   "author": {
     "name": "Tsubaki Community",
