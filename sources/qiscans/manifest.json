@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "qiscans",
   "name": "Quantum Scans",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Quantum Scans (qimanga.com): manhwa and manhua straight from the scanlation group, via the site's public API. Paid early-access chapters show up once they become free.",
   "author": {
     "name": "Tsubaki Community",

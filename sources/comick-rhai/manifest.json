@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "comick",
   "name": "ComicK",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "ComicK - Massive manga, manhwa, and manhua library with multi-language support",
   "author": {"name": "Tsubaki Team", "url": "https://github.com/tsubaki"},
   "license": "MIT",

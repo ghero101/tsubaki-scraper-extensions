@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "drakescans",
   "name": "Drake Scans",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Drake Scans — read chapters straight from the scanlation group's own site (drakecomic.net).",
   "author": {
     "name": "Tsubaki Community",
