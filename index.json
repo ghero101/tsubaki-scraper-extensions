@@ -2156,6 +2156,90 @@
           "changelog": "New: read chapters straight from the scanlation group's site."
         }
       }
+    },
+    {
+      "id": "rizzfables",
+      "name": "Rizz Fables",
+      "version": "1.0.0",
+      "description": "Rizz Fables — read chapters straight from the scanlation group's own site (rizzfables.com).",
+      "author": "Tsubaki Team",
+      "technology": "rhai",
+      "addon_type": "scraper",
+      "nsfw": false,
+      "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/rizzfables/icon.png",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/rizzfables/rizzfables_1-0-0.zip",
+      "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/rizzfables/manifest.json",
+      "latest_version": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/rizzfables/rizzfables_1-0-0.zip",
+          "released_at": "2026-11-13T10:40:00Z",
+          "changelog": "New: read chapters straight from the scanlation group's site."
+        }
+      }
+    },
+    {
+      "id": "rokaricomics",
+      "name": "Rokari Comics",
+      "version": "1.0.0",
+      "description": "Rokari Comics — read chapters straight from the scanlation group's own site (rokaricomics.com).",
+      "author": "Tsubaki Team",
+      "technology": "rhai",
+      "addon_type": "scraper",
+      "nsfw": false,
+      "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/rokaricomics/icon.png",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/rokaricomics/rokaricomics_1-0-0.zip",
+      "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/rokaricomics/manifest.json",
+      "latest_version": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/rokaricomics/rokaricomics_1-0-0.zip",
+          "released_at": "2026-11-13T10:40:00Z",
+          "changelog": "New: read chapters straight from the scanlation group's site."
+        }
+      }
+    },
+    {
+      "id": "qiscans",
+      "name": "Quantum Scans",
+      "version": "1.0.0",
+      "description": "Quantum Scans (qimanga.com): manhwa and manhua straight from the scanlation group, via the site's public API. Paid early-access chapters show up once they become free.",
+      "author": "Tsubaki Team",
+      "technology": "rhai",
+      "addon_type": "scraper",
+      "nsfw": false,
+      "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/qiscans/icon.png",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/qiscans/qiscans_1-0-0.zip",
+      "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/qiscans/manifest.json",
+      "latest_version": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/qiscans/qiscans_1-0-0.zip",
+          "released_at": "2026-11-13T10:40:00Z",
+          "changelog": "New: read chapters straight from the scanlation group's site."
+        }
+      }
+    },
+    {
+      "id": "mangasushi",
+      "name": "Mangasushi",
+      "version": "1.0.0",
+      "description": "Mangasushi (mangasushi.org): manga straight from the Mangasushi scanlation group's own site.",
+      "author": "Tsubaki Team",
+      "technology": "rhai",
+      "addon_type": "scraper",
+      "nsfw": false,
+      "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/mangasushi/icon.png",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/mangasushi/mangasushi_1-0-0.zip",
+      "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/mangasushi/manifest.json",
+      "latest_version": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/mangasushi/mangasushi_1-0-0.zip",
+          "released_at": "2026-11-13T10:40:00Z",
+          "changelog": "New: read chapters straight from the scanlation group's site."
+        }
+      }
     }
   ]
 }

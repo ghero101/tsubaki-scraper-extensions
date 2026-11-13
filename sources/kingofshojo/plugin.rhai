@@ -326,6 +326,9 @@ fn get_chapters(series_id, auth) {
     for li in html_select(html, "#chapterlist li") {
         let links = html_select(li, "a[href]");
         if links.len() == 0 { continue; }          // coin-locked: no free link
+        // Some sites keep the link and mark paid early-access chapters with a
+        // gold coin price tag instead (Rokari Comics); those pages are empty.
+        if `${li}`.contains("text-gold") || `${li}`.contains("premium-chapter") { continue; }
         let href = element_attr(links[0], "href");
         if href == () || href == "" || href.starts_with("#") { continue; }
         let ch_url = absolutise(href);
@@ -390,6 +393,10 @@ fn get_chapter_pages(chapter_id, auth) {
             let u = img_url(img);
             if u != () && u != "" && !u.contains("readerarea.svg") { images.push(u); }
         }
+    }
+
+    if images.len() == 0 && (html.contains("text-gold") || html.to_lower().contains("unlock this chapter") || html.to_lower().contains("purchase this chapter")) {
+        throw `${SITE_NAME}: this chapter is coin-locked (paid early access) and has no free pages yet`;
     }
 
     let pages = [];
