@@ -699,6 +699,35 @@ fn get_latest_updates(page, auth) {
     #{ series: series, has_more: result.has_more }
 }
 
+/// The position the catalog sync handed back from our last page
+/// (settings.filters.cursor), or "" on the first call.
+fn catalog_cursor() {
+    let f = settings["filters"];
+    if type_of(f) != "map" { return ""; }
+    let c = f["cursor"];
+    if type_of(c) == "string" { c } else { "" }
+}
+
+/// Full catalog sync. Search stops at 10,000 results (416 pages) per sort
+/// order, fewer than the site carries, so the walk reads the directory in
+/// four orders (newest, latest update, views, rating) and the sync keeps
+/// the union. The cursor "order:page" carries the walk between orders.
+fn get_catalog(page, auth) {
+    let orders = ["newest", "latest", "views", "rating"];
+    let idx = 0;
+    let p = if page < 1 { 1 } else { page };
+    let cursor = catalog_cursor();
+    if cursor != "" {
+        let parts = cursor.split(":");
+        idx = parse_int(parts[0]);
+        if parts.len() > 1 { p = parse_int(parts[1]); }
+    }
+    if idx >= orders.len() { return #{ series: [], has_more: false }; }
+    let result = fetch_listing(`${BASE_URL}/search?sort=${orders[idx]}&page=${p}`, p);
+    let next = if result.has_more && result.series.len() > 0 { `${idx}:${p + 1}` } else if idx + 1 < orders.len() { `${idx + 1}:1` } else { "" };
+    #{ series: result.series, has_more: next != "", next_cursor: next }
+}
+
 /// Browse manga (main browse endpoint)
 fn browse(page, category, auth) {
     if category == "latest" || category == "updated" || category == "new" {

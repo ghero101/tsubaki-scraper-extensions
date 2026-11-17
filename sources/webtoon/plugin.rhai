@@ -927,6 +927,50 @@ fn get_popular(page, auth) {
     #{ series: series, has_more: has_more }
 }
 
+/// The position the catalog sync handed back from our last page
+/// (settings.filters.cursor), or "" on the first call.
+fn catalog_cursor() {
+    let f = settings["filters"];
+    if type_of(f) != "map" { return ""; }
+    let c = f["cursor"];
+    if type_of(c) == "string" { c } else { "" }
+}
+
+/// Full catalog sync: every Original. The ongoing list, then the completed
+/// list, then each genre page, each read 100 cards at a time (bigger arrays
+/// overflow the Rhai->Rust conversion) until a page comes up short. The
+/// cursor "list:offset" carries the walk; series repeat across genres and
+/// are de-duplicated by the sync.
+fn get_catalog(page, auth) {
+    let lists = ["ongoing", "complete", "drama", "fantasy", "comedy", "action", "romance",
+        "sf", "thriller", "supernatural", "mystery", "sports", "slice_of_life",
+        "super_hero", "historical", "heart_warming", "horror", "informative"];
+    let idx = 0;
+    let offset = 0;
+    let cursor = catalog_cursor();
+    if cursor != "" {
+        let parts = cursor.split(":");
+        idx = parse_int(parts[0]);
+        if parts.len() > 1 { offset = parse_int(parts[1]); }
+    } else if page > 1 {
+        // No cursor: one list per page, first 100 cards each.
+        idx = page - 1;
+    }
+    if idx >= lists.len() { return #{ series: [], has_more: false }; }
+    let name = lists[idx];
+    let series = [];
+    let full = false;
+    if name == "ongoing" {
+        series = parse_webtoon_cards(safe_get(`${BASE_URL}/en/originals`)).series;
+    } else {
+        let url = if name == "complete" { `${BASE_URL}/en/originals/complete?sortOrder=MANA` } else { `${BASE_URL}/en/genres/${name}?sortOrder=MANA` };
+        series = parse_webtoon_genre_cards_limited(safe_get(url), offset, 100).series;
+        full = series.len() >= 100;
+    }
+    let next = if full { `${idx}:${offset + 100}` } else if idx + 1 < lists.len() { `${idx + 1}:0` } else { "" };
+    #{ series: series, has_more: next != "", next_cursor: next }
+}
+
 // === Helper Functions ===
 
 /// Extract title_no from Webtoon URL

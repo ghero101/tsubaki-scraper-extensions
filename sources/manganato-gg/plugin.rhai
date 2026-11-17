@@ -891,7 +891,18 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest updates
 fn get_latest_updates(page, auth) {
-    let path = `/?page=${page}`;
+    nato_listing("/?page=", page)
+}
+
+// Full catalog sync: the whole directory, newest first (/manga-list/new-manga,
+// ~4,000 pages of 24). Creation order barely moves while the crawl runs; the
+// home page (latest) stops at 50 pages.
+fn get_catalog(page, auth) {
+    nato_listing("/manga-list/new-manga?page=", page)
+}
+
+fn nato_listing(base, page) {
+    let path = `${base}${page}`;
     let html = fetch_with_fallback(path);
 
     if html == "" {
@@ -910,6 +921,9 @@ fn get_latest_updates(page, auth) {
     }
     if items.len() == 0 {
         items = html_select(html, "div.list-truyen-item-wrap");
+    }
+    if items.len() == 0 {
+        items = html_select(html, "div.list-comic-item-wrap");
     }
 
     for item in items {
@@ -982,7 +996,7 @@ fn get_latest_updates(page, auth) {
         });
     }
 
-    let has_more = page < 50 && series.len() > 0;
+    let has_more = series.len() > 0 && if base == "/?page=" { page < 50 } else { html.contains(`page=${page + 1}`) };
 
     #{ series: series, has_more: has_more }
 }

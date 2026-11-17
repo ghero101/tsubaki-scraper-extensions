@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "mangapill",
   "name": "MangaPill",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "Scraper for MangaPill (mangapill.com), a popular manga aggregator site with a large collection of manga titles.",
   "author": {
     "name": "Tsubaki Community",

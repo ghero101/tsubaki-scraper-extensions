@@ -192,6 +192,13 @@ fn get_popular(page, auth) {
     query(page, "totalViews", "").series
 }
 
+// Full catalog sync: every comic on the site, by title (orderBy=postTitle is
+// the one stable order the API honours), paged until totalCount is reached.
+fn get_catalog(page, auth) {
+    let r = query(page, "postTitle", "");
+    #{ series: r.series, has_more: r.has_more }
+}
+
 fn search_series(q, page, auth) {
     query(page, "updated_at", q.trim())
 }

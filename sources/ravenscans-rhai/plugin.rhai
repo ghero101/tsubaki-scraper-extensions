@@ -1217,12 +1217,20 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest manga updates
 fn get_latest_updates(page, auth) {
-    let url = `${BASE_URL}/series/`;
-    if page > 1 {
-        url = `${BASE_URL}/series/page/${page}/`;
-    }
-    // Flavor theme: ?order=update for latest
-    url += "?order=update";
+    theme_listing("update", page)
+}
+
+// Full catalog sync: the whole series directory A-Z (?order=title), paged
+// until the site runs out. Title order holds still while the crawl runs.
+fn get_catalog(page, auth) {
+    theme_listing("title", page)
+}
+
+fn theme_listing(order, page) {
+    // Flavor theme: ?order=update for latest, ?order=title for A-Z. The
+    // page goes in the query: /series/page/N/ serves page 1 again on this theme.
+    let p = if page < 1 { 1 } else { page };
+    let url = `${BASE_URL}/series/?page=${p}&order=${order}`;
 
     let html = fetch_html(url);
 
@@ -1242,7 +1250,8 @@ fn get_latest_updates(page, auth) {
     if !has_more && series.len() >= 15 {
         has_more = true;
     }
-    if page >= 100 {
+    // The cap guards only the latest listing; a catalog walk ends with the site.
+    if order != "title" && page >= 100 {
         has_more = false;
     }
 

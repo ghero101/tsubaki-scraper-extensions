@@ -207,6 +207,13 @@ fn get_popular(page, auth) {
     listing("popular", page).series
 }
 
+// Full catalog sync: the whole series directory, A-Z, paged to the end. A
+// title order stays put while the crawl runs; "update" order reshuffles as
+// chapters land and can skip series between pages.
+fn get_catalog(page, auth) {
+    listing("title", page)
+}
+
 fn search_series(query, page, auth) {
     let p = if page < 1 { 1 } else { page };
     // WordPress search misses titles typed with curly quotes ("Serim’s"), and

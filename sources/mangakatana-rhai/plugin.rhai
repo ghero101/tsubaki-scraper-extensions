@@ -684,7 +684,17 @@ fn get_chapter_pages(chapter_id, auth) {
 
 /// Get latest updates
 fn get_latest_updates(page, auth) {
-    let url = `${BASE_URL}/latest/page/${page}`;
+    katana_listing("latest", page)
+}
+
+// Full catalog sync: the whole directory (/manga/page/N, ~1,400 pages), every
+// series the site carries; /latest only reaches recently updated ones.
+fn get_catalog(page, auth) {
+    katana_listing("manga", page)
+}
+
+fn katana_listing(dir, page) {
+    let url = `${BASE_URL}/${dir}/page/${page}`;
 
     let html = fetch_html(url);
     if html == "" {
@@ -765,7 +775,7 @@ fn get_latest_updates(page, auth) {
     // Check for next page
     let has_more = false;
     let next_page = page + 1;
-    if html.contains(`/latest/page/${next_page}`) || html.contains(`page=${next_page}`) {
+    if html.contains(`/${dir}/page/${next_page}`) || html.contains(`page=${next_page}`) {
         has_more = true;
     }
     // If we got a reasonable number of results, assume more pages exist
