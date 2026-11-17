@@ -610,3 +610,13 @@ fn get_popular(page, auth) {
     let has_more = series.len() > 0 && page < 300;
     #{ series: series, has_more: has_more }
 }
+
+// Full catalog sync: the A-Z directory (/directory/0-0-0-0-0-0/N.htm?name.az,
+// 30 a page), every series the site carries; /latest/ stops at 50 pages.
+fn get_catalog(page, auth) {
+    let p = if page < 1 { 1 } else { page };
+    let html = fetch_html(`${BASE_URL}/directory/0-0-0-0-0-0/${p}.htm?name.az`);
+    let series = parse_listing(html);
+    // The pager only links a window of pages; a full page means more follow.
+    #{ series: series, has_more: series.len() >= 30 }
+}

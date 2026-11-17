@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "toonclash",
   "name": "ToonClash",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "ToonClash - Manga, manhwa, and manhua reader",
   "deprecated": {
     "is_deprecated": true,

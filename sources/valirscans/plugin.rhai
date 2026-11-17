@@ -178,6 +178,18 @@ fn get_popular(page, auth) {
     listing(page, "popular").series
 }
 
+// Full catalog sync: /series pages through the whole directory (every comic
+// the site carries); the page payload's totalPages says where it ends.
+fn get_catalog(page, auth) {
+    let p = if page < 1 { 1 } else { page };
+    let html = fetch(`${BASE_URL}/series?page=${p}`);
+    if html == "" { return #{ series: [], has_more: false }; }
+    let series = parse_cards(html);
+    let total = regex_find("[0-9]+", regex_find("totalPages[^0-9]{0,4}[0-9]+", html));
+    let has_more = if total != "" { p < parse_int(total) } else { series.len() >= 20 };
+    #{ series: series, has_more: series.len() > 0 && has_more }
+}
+
 fn search_series(query, page, auth) {
     // The search API returns one page of best matches; there is no page 2.
     if page > 1 { return #{ series: [], has_more: false, total: 0 }; }

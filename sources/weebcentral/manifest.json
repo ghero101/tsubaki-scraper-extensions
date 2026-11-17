@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "weebcentral",
   "name": "WeebCentral",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Scraper for WeebCentral (weebcentral.com), the successor to MangaSee and MangaLife featuring high-quality manga scans.",
   "author": {
     "name": "Tsubaki Community",

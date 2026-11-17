@@ -1149,7 +1149,18 @@ fn extract_page_images(html, referer_url) {
 
 /// Get latest manga updates
 fn get_latest_updates(page, auth) {
-    let url = `${BASE_URL}/manga/?m_orderby=latest&page=${page}`;
+    madara_listing("latest", page)
+}
+
+// Full catalog sync: the whole directory A-Z (m_orderby=alphabet), paged
+// until the site runs out of pages. Alphabetical order holds still while the
+// crawl runs; the latest order reshuffles and can skip series.
+fn get_catalog(page, auth) {
+    madara_listing("alphabet", page)
+}
+
+fn madara_listing(order, page) {
+    let url = `${BASE_URL}/manga/?m_orderby=${order}&page=${page}`;
 
     let html = fetch_html(url);
 
@@ -1235,8 +1246,17 @@ fn get_latest_updates(page, auth) {
     if !has_more && series.len() >= 15 {
         has_more = true;
     }
-    if page >= 100 {
+    // The page cap only guards the latest listing; a catalog walk ends when
+    // the site runs out of pages.
+    if order != "alphabet" && page >= 100 {
         has_more = false;
+    }
+
+    // Many Madara sites page the directory with an ajax "load more" (no
+    // next link) and short pages, so a catalog walk just runs until a page
+    // comes back empty.
+    if order == "alphabet" {
+        has_more = series.len() > 0;
     }
 
     #{ series: series, has_more: has_more }

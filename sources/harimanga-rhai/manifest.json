@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "harimanga",
   "name": "HariManga",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "deprecated": {
     "is_deprecated": true,
     "reason": "Site is gone: harimanga.me serves an 'Account Suspended' page (checked 2026-11-11). No working mirror found.",
