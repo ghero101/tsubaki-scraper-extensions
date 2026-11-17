@@ -747,20 +747,23 @@ fn get_chapters(series_id, auth) {
         sid = series_id.replace("/series/", "");
     }
 
+    // A failed fetch must throw, not return []: an empty list reads as "the
+    // site delisted every chapter", so FindNewChapters logged a misleading
+    // 0-chapter warning and never tried the series' other sources.
     let data = ();
     try {
         data = api_get(`/series/${sid}`);
-    } catch {
-        return [];
+    } catch (err) {
+        throw `Failed to fetch chapters for ${sid}: ${err}`;
     }
 
-    if data == () {
-        return [];
+    if type_of(data) != "map" {
+        throw `Failed to fetch chapters for ${sid}: no series data`;
     }
 
     let books = data["series_books"];
     if books == () || type_of(books) != "array" {
-        return [];
+        throw `Failed to fetch chapters for ${sid}: response had no series_books list`;
     }
 
     let chapters = [];
