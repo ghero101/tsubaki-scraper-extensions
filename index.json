@@ -1,20 +1,20 @@
 {
-  "version": 100,
-  "updated_at": "2026-11-17T11:03:15Z",
+  "version": 102,
+  "updated_at": "2026-11-25T05:23:14Z",
   "addons": [
     {
       "id": "asurascans",
       "name": "Asura Scans",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "description": "Asura Scans - Popular scanlation group for manhwa and manga",
       "author": "Tsubaki Team",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/asurascans-rhai/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/asurascans-rhai/asurascans-rhai_2-1-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/asurascans-rhai/asurascans-rhai_2-1-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/asurascans-rhai/manifest.json",
-      "latest_version": "2.1.0",
+      "latest_version": "2.1.1",
       "versions": {
         "2.0.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/asurascans-rhai/asurascans-rhai_2-0-0.zip",
@@ -64,6 +64,11 @@
         "2.1.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/asurascans-rhai/asurascans-rhai_2-1-0.zip",
           "released_at": "2026-11-13T16:23:08Z",
+          "changelog": "Updated"
+        },
+        "2.1.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/asurascans-rhai/asurascans-rhai_2-1-1.zip",
+          "released_at": "2026-11-25T05:23:14Z",
           "changelog": "Updated"
         }
       }
@@ -301,16 +306,16 @@
     {
       "id": "heancms",
       "name": "HeanCMS",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "description": "Framework parser for HeanCMS-based manga sites (OmegaScans, ReaperScans, QuantumScans, etc.). Configure the base URL in settings to use with your preferred HeanCMS site.",
       "author": "Tsubaki Community",
       "technology": "rhai",
       "addon_type": "scraper",
       "nsfw": false,
       "icon_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/heancms/icon.png",
-      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/heancms/heancms_1-2-0.zip",
+      "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/heancms/heancms_1-2-1.zip",
       "manifest_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/sources/heancms/manifest.json",
-      "latest_version": "1.2.0",
+      "latest_version": "1.2.1",
       "versions": {
         "1.0.3": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/heancms/heancms_1-0-3.zip",
@@ -345,6 +350,11 @@
         "1.2.0": {
           "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/heancms/heancms_1-2-0.zip",
           "released_at": "2026-11-12T01:28:02Z",
+          "changelog": "Updated"
+        },
+        "1.2.1": {
+          "download_url": "https://raw.githubusercontent.com/ghero101/tsubaki-scraper-extensions/master/dist/heancms/heancms_1-2-1.zip",
+          "released_at": "2026-11-25T05:23:14Z",
           "changelog": "Updated"
         }
       },
