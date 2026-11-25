@@ -790,9 +790,12 @@ fn build_pages(images, referer_url) {
 fn create_page(index, url, referer) {
     let full_url = url;
 
-    // Make URL absolute if needed
+    // Make URL absolute if needed. HeanCMS serves its uploads from the API
+    // host: "uploads/series/..." is https://api.omegascans.org/uploads/...,
+    // and the same path on the site host is a 404 (every Omega Scans page
+    // failed that way on prod, 2026-11-24).
     if !url.starts_with("http") {
-        let base = get_base_url();
+        let base = get_api_url();
         if url.starts_with("/") {
             full_url = `${base}${url}`;
         } else {

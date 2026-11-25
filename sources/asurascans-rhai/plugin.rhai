@@ -221,6 +221,19 @@ fn get_chapters(series_id, auth) {
     chapters
 }
 
+/// API chapter slug for chapter number `num` of series `slug` ("70" ->
+/// "chapter-70"), looked up in the chapter list so decimal and renamed
+/// chapters resolve too. Falls back to the usual "chapter-{n}" form.
+fn legacy_chapter_slug(slug, num) {
+    let want = parse_float(num);
+    let parsed = api_get(`/api/series/${slug}/chapters`);
+    for ch in data_array(parsed) {
+        if ch.slug == () || ch.slug == "" { continue; }
+        if parse_float(`${ch.number}`) == want { return ch.slug; }
+    }
+    `chapter-${num}`
+}
+
 fn get_chapter_pages(chapter_id, auth) {
     // chapter_id = "{seriesSlug}|{chapterSlug}"
     let slug = chapter_id;
@@ -229,6 +242,15 @@ fn get_chapter_pages(chapter_id, auth) {
         let parts = chapter_id.split("|");
         slug = parts[0];
         if parts.len() > 1 { cslug = parts[1]; }
+    } else if chapter_id.contains("/comics/") && chapter_id.contains("/chapter/") {
+        // Chapters stored before the API rewrite are reader URLs on the old
+        // domain (https://asuracomic.net/comics/{slug}-{hash}/chapter/{n}),
+        // which now redirects to the home page, so they downloaded 0 pages.
+        // The API still accepts the hashed series slug; map the number to the
+        // chapter's API slug through the chapter list.
+        slug = to_slug(chapter_id);
+        let num = chapter_id.split("/chapter/")[1].split("/")[0].split("?")[0];
+        cslug = legacy_chapter_slug(slug, num);
     }
 
     let parsed = api_get(`/api/series/${slug}/chapters/${cslug}`);
