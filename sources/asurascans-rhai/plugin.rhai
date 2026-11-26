@@ -242,9 +242,11 @@ fn get_chapter_pages(chapter_id, auth) {
         let parts = chapter_id.split("|");
         slug = parts[0];
         if parts.len() > 1 { cslug = parts[1]; }
-    } else if chapter_id.contains("/comics/") && chapter_id.contains("/chapter/") {
+    } else if (chapter_id.contains("/comics/") || chapter_id.contains("/series/"))
+        && chapter_id.contains("/chapter/") {
         // Chapters stored before the API rewrite are reader URLs on the old
-        // domain (https://asuracomic.net/comics/{slug}-{hash}/chapter/{n}),
+        // domain (https://asuracomic.net/comics/{slug}-{hash}/chapter/{n}, or
+        // the older /series/{slug}-{hash}/chapter/{n}),
         // which now redirects to the home page, so they downloaded 0 pages.
         // The API still accepts the hashed series slug; map the number to the
         // chapter's API slug through the chapter list.

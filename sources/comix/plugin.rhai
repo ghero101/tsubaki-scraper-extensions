@@ -273,6 +273,62 @@ fn get_chapters(series_id, auth) {
     chapters
 }
 
+/// Collect reader image URLs from rendered reader HTML.
+///
+/// Since 2026-11 comix serves pages from rotating hosts
+/// (`https://pq4.<random>.site/hi/<token>`), no longer static.comix.to, so
+/// read the `rpage-page__img` tags themselves rather than matching a host.
+fn reader_images(html) {
+    let urls = [];
+    let tags = regex_find_all("<img[^>]*rpage-page__img[^>]*>", html);
+    for tag in tags {
+        let src = regex_find("src=\"(https?://[^\"]+)\"", tag);
+        if src != () && src != "" {
+            // Full match is `src="URL"`: drop the 5-char prefix and the quote.
+            urls.push(src.sub_string(5, src.len() - 6));
+        }
+    }
+    // Older reader markup: full-size images on static.comix.to.
+    if urls.len() == 0 {
+        for m in regex_find_all("static\\.comix\\.to/[A-Za-z0-9/]+/[A-Za-z0-9]+\\.(jpg|png|webp)", html) {
+            if !m.contains("@") { urls.push(`https://${m}`); }
+        }
+    }
+    urls
+}
+
+/// Render the reader in the headless browser and scroll every page slot into
+/// view. The reader is lazy: a plain render (FlareSolverr) only has the first
+/// three of e.g. 94 images; the rest load as their slot scrolls into view.
+fn browser_reader_html(url) {
+    if !browser_is_available() { return ""; }
+    let id = ();
+    let html = "";
+    try {
+        id = browser_launch();
+        browser_goto(id, url);
+        browser_wait_for_selector(id, ".rpage-page__img", 30000);
+        let n = parse_int(browser_execute_script(id, "String(document.querySelectorAll('.rpage-page').length)"));
+        for i in 1..=n {
+            browser_execute_script(id, `(function(){var e=document.querySelector('.rpage-page[data-page="${i}"]');if(e)e.scrollIntoView();return 'ok';})()`);
+            browser_sleep(120);
+        }
+        // Give the last few images time to get their src.
+        let waited = 0;
+        while waited < 5000 {
+            let have = parse_int(browser_execute_script(id, "String(document.querySelectorAll('.rpage-page__img[src]').length)"));
+            if have >= n { break; }
+            browser_sleep(500);
+            waited += 500;
+        }
+        html = browser_get_html(id);
+    } catch {
+        html = "";
+    }
+    if id != () { try { browser_close(id); } catch {} }
+    html
+}
+
 fn get_chapter_pages(chapter_id, auth) {
     let url = `${chapter_id}`;
     if !url.starts_with("http") {
@@ -280,26 +336,27 @@ fn get_chapter_pages(chapter_id, auth) {
         url = `${BASE_URL}${url}`;
     }
 
-    let html = render_html(url);
-    if html == "" { return []; }
+    let urls = reader_images(browser_reader_html(url));
+    if urls.len() == 0 {
+        // No browser (or it failed): a plain render still gets the first
+        // pages, which beats nothing only if it's the whole chapter, so only
+        // use it when the reader has no further lazy slots.
+        let html = render_html(url);
+        if html == "" { return []; }
+        let slots = regex_find_all("class=\"rpage-page\"", html).len();
+        let found = reader_images(html);
+        if slots > found.len() { return []; }
+        urls = found;
+    }
 
     let pages = [];
-    let idx = 0;
     let seen = #{};
-    // Full-size reader images live on static.comix.to without an @size suffix.
-    let matches = regex_find_all("static\\.comix\\.to/[A-Za-z0-9/]+/[A-Za-z0-9]+\\.(jpg|png|webp)", html);
-    for m in matches {
-        if m.contains("@") { continue; }
-        let full = `https://${m}`;
-        if seen[full] != () { continue; }
-        seen[full] = true;
-        pages.push(#{
-            index: idx,
-            url: full,
-            headers: #{ "Referer": url },
-            referer: url
-        });
-        idx += 1;
+    for u in urls {
+        if seen[u] != () { continue; }
+        seen[u] = true;
+        // The reader fetches these with referrerpolicy=no-referrer; they
+        // download fine without a Referer.
+        pages.push(#{ index: pages.len(), url: u });
     }
     pages
 }
