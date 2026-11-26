@@ -109,6 +109,9 @@ fn browse(page, category, auth) {
         order_by = "created_at";
     } else if category == "rating" {
         order_by = "averageRating";
+    } else if category == "catalog" {
+        // Title order is stable while the catalog walk pages through it.
+        order_by = "postTitle";
     }
 
     let params = `page=${page}&perPage=20&series_type=Comic&adult=true&order=desc&orderBy=${order_by}&status=All&tags_ids=[]`;
@@ -505,6 +508,11 @@ fn get_chapter_pages(chapter_id, auth) {
     }
 
     pages
+}
+
+/// The whole library (full series items, title order).
+fn get_catalog(page, auth) {
+    browse(page, "catalog", auth)
 }
 
 /// Get latest updates

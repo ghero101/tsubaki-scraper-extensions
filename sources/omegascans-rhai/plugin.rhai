@@ -84,11 +84,14 @@ fn browse(page, category, auth) {
     let order_by = "updated_at";
     if category == "popular" {
         order_by = "total_views";
-    } else if category == "new" {
+    } else if category == "new" || category == "catalog" {
         order_by = "created_at";
     }
+    // The catalog walks oldest first so new series land on the last page
+    // instead of shifting the pages already read.
+    let order = if category == "catalog" { "asc" } else { "desc" };
 
-    let params = `page=${page}&perPage=20&series_type=Comic&adult=true&order=desc&orderBy=${order_by}&status=All&tags_ids=[]`;
+    let params = `page=${page}&perPage=20&series_type=Comic&adult=true&order=${order}&orderBy=${order_by}&status=All&tags_ids=[]`;
     let url = `${API_URL}/query?${params}`;
     let response = http_get_with_headers(url, get_headers());
 
@@ -453,6 +456,11 @@ fn get_chapter_pages(chapter_id, auth) {
     }
 
     pages
+}
+
+/// The whole library (full series items, oldest first).
+fn get_catalog(page, auth) {
+    browse(page, "catalog", auth)
 }
 
 /// Get latest updates
