@@ -554,6 +554,11 @@ fn search_series(query, page, auth) {
 
 /// Browse manga by category/order
 fn browse(page, category, auth) {
+    // The Next.js listing ignores sort parameters, so every category is the
+    // same ?page=N list; read it from the embedded data (see get_catalog).
+    let cards = get_catalog(page, auth);
+    if cards.series.len() > 0 { return cards; }
+
     if category == "latest" || category == "new" || category == () || category == "" {
         return get_latest_updates(page, auth);
     }
@@ -747,6 +752,10 @@ fn get_series(id_or_url, auth) {
     if ogimg.len() > 0 {
         let c = element_attr(ogimg[0], "content");
         if c != () && c != "" { cover_url = c.trim(); }
+    }
+    // The rebuilt site's <title> reads "Read {title} online free".
+    if title.starts_with("Read ") && title.ends_with(" online free") {
+        title = title.sub_string(5, title.len() - 17).trim();
     }
     if cover_url == () {
         let cover_els = html_select(html, ".detail-cover img, .series-cover img, .summary_image img, .tab-summary img, .manga-page img");
@@ -1332,6 +1341,9 @@ fn get_chapter_pages_legacy(chapter_id, auth) {
 
 /// Get latest manga updates
 fn get_latest_updates(page, auth) {
+    let cards = get_catalog(page, auth);
+    if cards.series.len() > 0 { return cards; }
+
     // Philia Scans uses /all-mangas/ with ?paged= pagination (WordPress block template)
     let url = `${BASE_URL}/all-mangas/`;
     if page > 1 {
@@ -1450,5 +1462,64 @@ fn get_latest_updates(page, auth) {
         has_more = false;
     }
 
+    #{ series: series, has_more: has_more }
+}
+
+/// Map Philia's status enum (ON_GOING, COMPLETED, ...) to a display word.
+fn philia_status(s) {
+    if s == () { return (); }
+    let u = s.to_upper();
+    if u.contains("GOING") { return "Ongoing"; }
+    if u.contains("COMPLETE") { return "Completed"; }
+    if u.contains("HIATUS") { return "Hiatus"; }
+    if u.contains("CANCEL") || u.contains("DROP") { return "Cancelled"; }
+    ()
+}
+
+/// The series cards embedded in an /all-mangas page's Next.js payload:
+/// `{"id":N,"slug":..,"title":..,"coverImageUrl":..,"status":..}` with the
+/// quotes escaped (`\"`). The card markup itself mixes the status badge and
+/// chapter count into the link text ("Ongoing15 ch"), so read the data
+/// instead of the HTML.
+fn parse_listing_cards(html) {
+    let pat = `\{\\"id\\":[0-9]+,\\"slug\\":\\"[^\\"]+\\",\\"title\\":\\".*?\\",\\"coverImageUrl\\":\\".*?\\",\\"status\\":\\"[A-Z_]*\\"`;
+    let series = [];
+    let seen = #{};
+    for raw in regex_find_all(pat, html) {
+        let js = raw.replace(`\"`, `"`).replace(`&`, "&") + "}";
+        let item = ();
+        try { item = json_parse(js); } catch { item = (); }
+        if type_of(item) != "map" { continue; }
+        let slug = item["slug"];
+        if slug == () || slug == "" || seen.contains(slug) { continue; }
+        seen[slug] = true;
+        let title = item["title"];
+        if title == () || title == "" { continue; }
+        series.push(#{
+            id: slug,
+            title: title,
+            url: `${BASE_URL}/series/${slug}`,
+            cover_url: `${BASE_URL}/api/covers/${slug}`,
+            status: philia_status(item["status"]),
+            extra: #{ source_site: "philiascans", philia_id: item["id"] }
+        });
+    }
+    series
+}
+
+/// The whole library: /all-mangas pages with ?page=N (24 per page). The
+/// payload carries `totalPages`; without it, keep going while pages are full.
+fn get_catalog(page, auth) {
+    let p = if page == () || page < 1 { 1 } else { page };
+    let url = if p > 1 { `${BASE_URL}/all-mangas?page=${p}` } else { `${BASE_URL}/all-mangas` };
+    let html = fetch_html(url);
+    if html == "" { return #{ series: [], has_more: false }; }
+    let series = parse_listing_cards(html);
+    let total_pages = regex_find(`\\"totalPages\\":[0-9]+`, html);
+    let has_more = if total_pages != "" {
+        p < parse_int(total_pages.split(":")[1])
+    } else {
+        series.len() >= 20
+    };
     #{ series: series, has_more: has_more }
 }

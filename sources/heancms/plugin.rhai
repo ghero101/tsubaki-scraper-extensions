@@ -815,8 +815,18 @@ fn create_page(index, url, referer) {
 
 /// Get latest updates
 fn get_latest_updates(page, auth) {
+    query_listing(page, "orderBy=latest", auth)
+}
+
+/// The whole library, oldest first: a stable order, so a series added during
+/// the walk lands on the last page instead of shifting earlier pages.
+fn get_catalog(page, auth) {
+    query_listing(page, "orderBy=created_at&order=asc", auth)
+}
+
+fn query_listing(page, order, auth) {
     let api_url = get_api_url();
-    let url = `${api_url}/query?page=${page}&perPage=${get_per_page()}&orderBy=latest&series_type=Comic`;
+    let url = `${api_url}/query?page=${page}&perPage=${get_per_page()}&${order}&series_type=Comic`;
 
     let response = "";
     try {
